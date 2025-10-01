@@ -135,7 +135,7 @@ class _InsetHomeScreenState extends State<InsetHomeScreen> {
             Positioned(
               left: 0,
               right: 0,
-              top: 10,
+              top: -7,
               child: Center(
                 child: Container(
                   width: 80,

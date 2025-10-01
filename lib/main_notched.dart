@@ -129,7 +129,7 @@ class _NotchedHomeScreenState extends State<NotchedHomeScreen> {
           Positioned(
             left: 0,
             right: 0,
-            top: -10, // 讓按鈕向上突出
+            top: -4, // 讓按鈕向上突出，且中心更高
             child: Center(
               child: GestureDetector(
                 onTap: () {

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../shared/themes/beer_colors.dart';
 import '../../../core/auth/auth_provider.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/widgets/circular_language_selector.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -65,31 +67,55 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
             // 主要內容
             SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(horizontal: 24.w),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Spacer(),
+              child: Stack(
+                children: [
+                  // 主要登入內容
+                  SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: SizedBox(
+                      height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Spacer(),
 
-                      // Logo 區域
-                      _buildLogoSection(),
+                          // Logo 區域
+                          _buildLogoSection(),
 
-                      SizedBox(height: 30.h),
+                          SizedBox(height: 20.h), // 從 30.h 減少到 20.h (減少 10px)
 
-                      // 登入表單
-                      _buildLoginForm(),
+                          // 登入表單
+                          _buildLoginForm(),
 
-                      const Spacer(),
+                          const Spacer(),
 
-                      // 底部裝飾文字
-                      _buildFooterText(),
-                      SizedBox(height: 30.h),
-                    ],
+                          // 底部裝飾文字
+                          _buildFooterText(),
+                          SizedBox(height: 30.h),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+
+                  // 語系切換按鈕 - 與下方email區塊左邊對齊
+                  Positioned(
+                    top: 8.h,
+                    left: 48.w, // 24.w (主要padding) + 24.w (表單padding) = 48.w
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.r),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 12.r,
+                            offset: Offset(0, 6.h),
+                          ),
+                        ],
+                      ),
+                      child: const CircularLanguageSelector(),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -275,6 +301,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLogoSection() {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         // 啤酒圖示
@@ -302,7 +330,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         // App 名稱
         Text(
-          'HoldYourBeer',
+          localizations.authAppTitle,
           style: TextStyle(
             fontSize: 32.sp,
             fontWeight: FontWeight.bold,
@@ -320,7 +348,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         // 副標題
         Text(
-          '追蹤啤酒時光',
+          localizations.authAppSubtitle,
           style: TextStyle(
             fontSize: 16.sp,
             color: BeerColors.primaryAmber600,
@@ -372,11 +400,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildEmailField() {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Email',
+          localizations.authEmail,
           style: TextStyle(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
@@ -388,7 +418,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: '請輸入您的 Email',
+            hintText: localizations.authEmailHint,
             prefixIcon: Icon(
               Icons.email_outlined,
               color: BeerColors.primaryAmber500,
@@ -412,10 +442,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return '請輸入 Email';
+              return localizations.authEmailRequired;
             }
             if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
-              return '請輸入有效的 Email 格式';
+              return localizations.authEmailInvalid;
             }
             return null;
           },
@@ -425,11 +455,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildPasswordField() {
+    final localizations = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Password',
+          localizations.authPassword,
           style: TextStyle(
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
@@ -441,7 +473,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           controller: _passwordController,
           obscureText: !_isPasswordVisible,
           decoration: InputDecoration(
-            hintText: '請輸入您的密碼',
+            hintText: localizations.authPasswordHint,
             prefixIcon: Icon(
               Icons.lock_outline,
               color: BeerColors.primaryAmber500,
@@ -477,10 +509,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return '請輸入密碼';
+              return localizations.authPasswordRequired;
             }
             if (value.length < 6) {
-              return '密碼至少需要 6 個字符';
+              return localizations.authPasswordMinLength;
             }
             return null;
           },
@@ -492,6 +524,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildLoginButton() {
     final authState = ref.watch(authStateProvider);
     final isLoading = authState is Loading;
+    final localizations = AppLocalizations.of(context)!;
 
     return SizedBox(
       width: double.infinity,
@@ -517,7 +550,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               )
             : Text(
-                '登入',
+                localizations.authLogin,
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
@@ -528,15 +561,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildForgotPasswordLink() {
+    final localizations = AppLocalizations.of(context)!;
+
     return Center(
       child: TextButton(
         onPressed: () {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('忘記密碼功能開發中...')),
+            SnackBar(content: Text('${localizations.authForgotPassword} 功能開發中...')),
           );
         },
         child: Text(
-          '忘記密碼？',
+          localizations.authForgotPassword,
           style: TextStyle(
             fontSize: 14.sp,
             color: BeerColors.primaryAmber600,
@@ -548,8 +583,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildFooterText() {
+    final localizations = AppLocalizations.of(context)!;
+
     return Text(
-      '2025 © HoldYourBeer. All rights reserved.',
+      localizations.authCopyright,
       style: TextStyle(
         fontSize: 12.sp,
         color: BeerColors.primaryAmber600.withOpacity(0.7),

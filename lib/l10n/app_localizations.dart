@@ -239,7 +239,7 @@ abstract class AppLocalizations {
   /// No description provided for @authLogin.
   ///
   /// In en, this message translates to:
-  /// **'Login'**
+  /// **'Log in'**
   String get authLogin;
 
   /// No description provided for @authRegister.
@@ -283,6 +283,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Registration failed'**
   String get authRegisterFailed;
+
+  /// No description provided for @authEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your email'**
+  String get authEmailHint;
+
+  /// No description provided for @authPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your password'**
+  String get authPasswordHint;
+
+  /// No description provided for @authNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get authNameHint;
+
+  /// No description provided for @authLoginLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging in...'**
+  String get authLoginLoading;
+
+  /// No description provided for @authEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter email'**
+  String get authEmailRequired;
+
+  /// No description provided for @authEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email format'**
+  String get authEmailInvalid;
+
+  /// No description provided for @authPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter password'**
+  String get authPasswordRequired;
+
+  /// No description provided for @authPasswordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get authPasswordMinLength;
+
+  /// No description provided for @authNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter name'**
+  String get authNameRequired;
+
+  /// No description provided for @authForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot your password?'**
+  String get authForgotPassword;
+
+  /// No description provided for @authRememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me'**
+  String get authRememberMe;
+
+  /// No description provided for @authOrSignInWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Or sign in with'**
+  String get authOrSignInWith;
+
+  /// No description provided for @authDontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get authDontHaveAccount;
+
+  /// No description provided for @authSignUpNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up now'**
+  String get authSignUpNow;
+
+  /// No description provided for @authAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'Already registered?'**
+  String get authAlreadyRegistered;
+
+  /// No description provided for @authAppTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'HoldYourBeer'**
+  String get authAppTitle;
+
+  /// No description provided for @authAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your beer moments'**
+  String get authAppSubtitle;
+
+  /// No description provided for @authCopyright.
+  ///
+  /// In en, this message translates to:
+  /// **'2025 © HoldYourBeer. All rights reserved.'**
+  String get authCopyright;
+
+  /// No description provided for @authLoginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful'**
+  String get authLoginSuccess;
+
+  /// No description provided for @authRegisterSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Registration successful'**
+  String get authRegisterSuccess;
+
+  /// No description provided for @authLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get authLogout;
+
+  /// No description provided for @authLogoutConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get authLogoutConfirm;
+
+  /// No description provided for @languageSelectTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get languageSelectTitle;
+
+  /// No description provided for @languageTraditionalChinese.
+  ///
+  /// In en, this message translates to:
+  /// **'繁體中文'**
+  String get languageTraditionalChinese;
+
+  /// No description provided for @languageEnglish.
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get languageEnglish;
 
   /// No description provided for @profileTitle.
   ///

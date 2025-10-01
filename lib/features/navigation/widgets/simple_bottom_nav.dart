@@ -30,65 +30,27 @@ class SimpleBottomNav extends StatelessWidget {
           ),
         ],
       ),
-      child: Stack(
+      child: Row(
         children: [
-          // 主要內容區域
-          Row(
-            children: [
-              // 左側 - 圖表統計按鈕
-              Expanded(
-                child: _buildNavItem(
-                  icon: Icons.home,
-                  isActive: currentIndex == 0,
-                  onTap: () => onTap(0),
-                ),
-              ),
-
-              // 中間空白區域（為圓形按鈕留出空間）
-              SizedBox(width: 80.w),
-
-              // 右側 - 會員資料按鈕
-              Expanded(
-                child: _buildNavItem(
-                  icon: Icons.person,
-                  isActive: currentIndex == 2,
-                  onTap: () => onTap(2),
-                ),
-              ),
-            ],
+          Expanded(
+            child: _buildNavItem(
+              icon: Icons.home,
+              isActive: currentIndex == 0,
+              onTap: () => onTap(0),
+            ),
           ),
-          // 中間的圓形凹陷區域和啤酒按鈕
-          Positioned(
-            left: 0,
-            right: 0,
-            top: 7.h,
-            child: Center(
-              child: Container(
-                width: 80.w,
-                height: 80.w,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.grey.withOpacity(0.15), // 淺灰色背景
-                ),
-                child: Center(
-                  child: GestureDetector(
-                    onTap: onAddBeer,
-                    child: Container(
-                      width: 56.w,
-                      height: 56.w,
-                      decoration: const BoxDecoration(
-                        color: BeerColors.primaryAmber500, // 使用啤酒主題色
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        Icons.sports_bar, // 使用啤酒圖示
-                        color: Colors.white,
-                        size: 28.sp,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+          Expanded(
+            child: _buildNavItem(
+              icon: Icons.sports_bar,
+              isActive: currentIndex == 1,
+              onTap: onAddBeer,
+            ),
+          ),
+          Expanded(
+            child: _buildNavItem(
+              icon: Icons.person,
+              isActive: currentIndex == 2,
+              onTap: () => onTap(2),
             ),
           ),
         ],
@@ -108,10 +70,20 @@ class SimpleBottomNav extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.r),
         ),
-        child: Icon(
-          icon,
-          size: 24.sp,
-          color: isActive ? BeerColors.primaryAmber500 : BeerColors.gray600,
+        child: Center(
+          child: Container(
+            width: 56.w,
+            height: 56.w,
+            decoration: BoxDecoration(
+              color: isActive ? BeerColors.primaryAmber500 : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 24.sp,
+              color: isActive ? Colors.white : BeerColors.gray600,
+            ),
+          ),
         ),
       ),
     );

@@ -80,7 +80,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get beerValidationStyleRequired => 'Style is required';
 
   @override
-  String get authLogin => 'Login';
+  String get authLogin => 'Log in';
 
   @override
   String get authRegister => 'Register';
@@ -102,6 +102,81 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authRegisterFailed => 'Registration failed';
+
+  @override
+  String get authEmailHint => 'Please enter your email';
+
+  @override
+  String get authPasswordHint => 'Please enter your password';
+
+  @override
+  String get authNameHint => 'Please enter your name';
+
+  @override
+  String get authLoginLoading => 'Logging in...';
+
+  @override
+  String get authEmailRequired => 'Please enter email';
+
+  @override
+  String get authEmailInvalid => 'Please enter a valid email format';
+
+  @override
+  String get authPasswordRequired => 'Please enter password';
+
+  @override
+  String get authPasswordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get authNameRequired => 'Please enter name';
+
+  @override
+  String get authForgotPassword => 'Forgot your password?';
+
+  @override
+  String get authRememberMe => 'Remember me';
+
+  @override
+  String get authOrSignInWith => 'Or sign in with';
+
+  @override
+  String get authDontHaveAccount => 'Don\'t have an account?';
+
+  @override
+  String get authSignUpNow => 'Sign up now';
+
+  @override
+  String get authAlreadyRegistered => 'Already registered?';
+
+  @override
+  String get authAppTitle => 'HoldYourBeer';
+
+  @override
+  String get authAppSubtitle => 'Track your beer moments';
+
+  @override
+  String get authCopyright => '2025 © HoldYourBeer. All rights reserved.';
+
+  @override
+  String get authLoginSuccess => 'Login successful';
+
+  @override
+  String get authRegisterSuccess => 'Registration successful';
+
+  @override
+  String get authLogout => 'Log out';
+
+  @override
+  String get authLogoutConfirm => 'Are you sure you want to log out?';
+
+  @override
+  String get languageSelectTitle => 'Select Language';
+
+  @override
+  String get languageTraditionalChinese => '繁體中文';
+
+  @override
+  String get languageEnglish => 'English';
 
   @override
   String get profileTitle => 'Profile';

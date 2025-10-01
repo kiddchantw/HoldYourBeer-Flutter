@@ -86,10 +86,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get authRegister => '註冊';
 
   @override
-  String get authEmail => '電子郵件';
+  String get authEmail => 'Email';
 
   @override
-  String get authPassword => '密碼';
+  String get authPassword => 'Password';
 
   @override
   String get authConfirmPassword => '確認密碼';
@@ -102,6 +102,81 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get authRegisterFailed => '註冊失敗';
+
+  @override
+  String get authEmailHint => '請輸入您的 Email';
+
+  @override
+  String get authPasswordHint => '請輸入您的密碼';
+
+  @override
+  String get authNameHint => '請輸入您的姓名';
+
+  @override
+  String get authLoginLoading => '登入中...';
+
+  @override
+  String get authEmailRequired => '請輸入 Email';
+
+  @override
+  String get authEmailInvalid => '請輸入有效的 Email 格式';
+
+  @override
+  String get authPasswordRequired => '請輸入密碼';
+
+  @override
+  String get authPasswordMinLength => '密碼至少需要 6 個字符';
+
+  @override
+  String get authNameRequired => '請輸入姓名';
+
+  @override
+  String get authForgotPassword => '忘記密碼？';
+
+  @override
+  String get authRememberMe => '記住我';
+
+  @override
+  String get authOrSignInWith => '或使用以下方式登入';
+
+  @override
+  String get authDontHaveAccount => '還沒有帳戶？';
+
+  @override
+  String get authSignUpNow => '立即註冊';
+
+  @override
+  String get authAlreadyRegistered => '已經有帳戶了嗎？';
+
+  @override
+  String get authAppTitle => 'HoldYourBeer';
+
+  @override
+  String get authAppSubtitle => '追蹤啤酒時光';
+
+  @override
+  String get authCopyright => '2025 © HoldYourBeer. All rights reserved.';
+
+  @override
+  String get authLoginSuccess => '登入成功';
+
+  @override
+  String get authRegisterSuccess => '註冊成功';
+
+  @override
+  String get authLogout => '登出';
+
+  @override
+  String get authLogoutConfirm => '確定要登出嗎？';
+
+  @override
+  String get languageSelectTitle => '選擇語言';
+
+  @override
+  String get languageTraditionalChinese => '繁體中文';
+
+  @override
+  String get languageEnglish => 'English';
 
   @override
   String get profileTitle => '會員資料';
