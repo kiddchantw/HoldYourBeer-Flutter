@@ -16,6 +16,13 @@ class ProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('會員資料'),
         automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => _showLogoutDialog(context, ref),
+            tooltip: '登出',
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.w),
@@ -77,23 +84,13 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => showLanguageDialog(context),
             ),
 
-            _buildSettingItem(
-              icon: Icons.notifications,
-              title: '通知設定',
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('通知設定功能開發中...')),
-                );
-              },
-            ),
+            // 通知設定已移除
 
             _buildSettingItem(
               icon: Icons.security,
               title: '隱私設定',
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('隱私設定功能開發中...')),
-                );
+                Navigator.of(context).pushNamed('/privacy');
               },
             ),
 
@@ -112,30 +109,7 @@ class ProfileScreen extends ConsumerWidget {
               },
             ),
 
-            SizedBox(height: 40.h),
-
-            // 登出按鈕
-            Container(
-              width: double.infinity,
-              margin: EdgeInsets.only(bottom: 20.h),
-              child: ElevatedButton(
-                onPressed: () {
-                  _showLogoutDialog(context, ref);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: BeerColors.error700,
-                  padding: EdgeInsets.symmetric(vertical: 16.h),
-                ),
-                child: Text(
-                  '登出',
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
+            SizedBox(height: 20.h),
           ],
         ),
       ),

@@ -104,6 +104,45 @@ class AuthService {
     }
   }
 
+  Future<UserData> updateProfile({
+    required String name,
+    required String email,
+  }) async {
+    try {
+      final response = await _apiClient.dio.patch('/profile', data: {
+        'name': name,
+        'email': email,
+      });
+
+      if (response.statusCode == 200) {
+        return UserData.fromJson(response.data['user']);
+      }
+      throw Exception('更新個人資料失敗');
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String newPasswordConfirmation,
+  }) async {
+    try {
+      final response = await _apiClient.dio.put('/password', data: {
+        'current_password': currentPassword,
+        'password': newPassword,
+        'password_confirmation': newPasswordConfirmation,
+      });
+
+      if (response.statusCode != 200) {
+        throw Exception('變更密碼失敗');
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
   Future<bool> isLoggedIn() async {
     final token = await _apiClient.getAuthToken();
     return token != null;

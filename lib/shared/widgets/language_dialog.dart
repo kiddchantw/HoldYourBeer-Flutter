@@ -1,33 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../core/i18n/locale_provider.dart';
 
 void showLanguageDialog(BuildContext context) {
   showDialog(
     context: context,
-    builder: (context) => AlertDialog(
-      title: const Text('選擇語言'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ListTile(
-            title: const Text('繁體中文'),
-            onTap: () {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('語言設定功能開發中...')),
-              );
-            },
+    builder: (context) => Consumer(
+      builder: (context, ref, _) {
+        final currentLocale = ref.watch(localeProvider);
+
+        return AlertDialog(
+          title: const Text('選擇語言'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<Locale>(
+                title: const Text('繁體中文'),
+                value: const Locale('zh', 'TW'),
+                groupValue: currentLocale,
+                onChanged: (value) {
+                  if (value != null) {
+                    ref.read(localeProvider.notifier).setLocale(value);
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+              RadioListTile<Locale>(
+                title: const Text('English'),
+                value: const Locale('en', 'US'),
+                groupValue: currentLocale,
+                onChanged: (value) {
+                  if (value != null) {
+                    ref.read(localeProvider.notifier).setLocale(value);
+                    Navigator.of(context).pop();
+                  }
+                },
+              ),
+            ],
           ),
-          ListTile(
-            title: const Text('English'),
-            onTap: () {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Language setting under development...')),
-              );
-            },
-          ),
-        ],
-      ),
+        );
+      },
     ),
   );
 }

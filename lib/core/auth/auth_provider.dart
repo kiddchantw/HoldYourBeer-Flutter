@@ -7,6 +7,7 @@ import '../services/auth_service.dart';
 import '../models/auth_models.dart';
 import '../network/api_client.dart';
 import '../../features/navigation/screens/main_scaffold_new.dart';
+import '../../features/profile/screens/privacy_settings_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
 
 // 用戶模型 - 基於 API 回應
@@ -193,6 +194,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/',
         builder: (context, state) => const MainScaffold(),
+      ),
+      GoRoute(
+        path: '/privacy',
+        builder: (context, state) => const PrivacySettingsScreen(),
       ),
     ],
   );
