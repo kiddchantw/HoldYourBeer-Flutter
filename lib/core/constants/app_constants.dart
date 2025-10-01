@@ -17,8 +17,8 @@ class AppConstants {
   static const String userDataKey = 'user_data';
 
   // API Configuration
-  static const String apiBaseUrl = 'http://10.0.2.2:8000/api'; // Android emulator
-  static const String webBaseUrl = 'http://localhost:8000/api'; // Web/iOS simulator
+  static const String apiBaseUrl = 'http://holdyourbeer.test/api'; // Android emulator
+  static const String webBaseUrl = 'http://holdyourbeer.test/api'; // Web/iOS simulator
 
   // Network Configuration
   static const Duration connectTimeout = Duration(seconds: 10);

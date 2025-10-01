@@ -9,9 +9,13 @@ import 'core/constants/app_constants.dart';
 import 'shared/themes/app_theme.dart';
 import 'core/auth/auth_provider.dart';
 import 'core/i18n/locale_provider.dart';
+import 'core/network/api_client.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize API Client
+  ApiClient().initialize();
 
   // Initialize Hive (暫時註釋掉以避免初始化問題)
   // await Hive.initFlutter();

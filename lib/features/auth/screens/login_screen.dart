@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../shared/themes/beer_colors.dart';
+import '../../../core/auth/auth_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -25,6 +26,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 監聽認證狀態變化
+    ref.listen<AuthState>(authStateProvider, (previous, next) {
+      if (next is AuthError) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(next.message),
+            backgroundColor: Colors.red,
+          ),
+        );
+        // 清除錯誤狀態
+        ref.read(authStateProvider.notifier).clearError();
+      }
+    });
+
+    final authState = ref.watch(authStateProvider);
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -473,11 +490,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildLoginButton() {
+    final authState = ref.watch(authStateProvider);
+    final isLoading = authState is Loading;
+
     return SizedBox(
       width: double.infinity,
       height: 50.h,
       child: ElevatedButton(
-        onPressed: _handleLogin,
+        onPressed: isLoading ? null : _handleLogin,
         style: ElevatedButton.styleFrom(
           backgroundColor: BeerColors.primaryAmber500,
           foregroundColor: Colors.white,
@@ -487,13 +507,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             borderRadius: BorderRadius.circular(12.r),
           ),
         ),
-        child: Text(
-          '登入',
-          style: TextStyle(
-            fontSize: 16.sp,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        child: isLoading
+            ? SizedBox(
+                width: 20.w,
+                height: 20.w,
+                child: const CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Text(
+                '登入',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
       ),
     );
   }
@@ -531,20 +560,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-      // 這裡實作實際的登入邏輯
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      // 暫時顯示登入資訊
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('登入中... Email: $email'),
-          backgroundColor: BeerColors.primaryAmber500,
-        ),
-      );
-
-      // TODO: 實作實際的 API 登入邏輯
-      // ref.read(authStateProvider.notifier).login(email, password);
+      // 使用 AuthProvider 進行登入
+      ref.read(authStateProvider.notifier).login(email, password);
     }
   }
 }
