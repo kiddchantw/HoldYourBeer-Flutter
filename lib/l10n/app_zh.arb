@@ -1,0 +1,61 @@
+{
+  "@@locale": "zh",
+  "@@last_modified": "2025-10-01T10:00:00.000Z",
+
+  "commonAdd": "新增",
+  "commonRetry": "重試",
+  "commonLoadFailed": "載入失敗",
+  "commonCancel": "取消",
+  "commonConfirm": "確認",
+  "commonSave": "儲存",
+  "commonDelete": "刪除",
+  "commonEdit": "編輯",
+
+  "beerMyBeers": "我的啤酒",
+  "beerNoneYet": "還沒有啤酒",
+  "beerTapToAdd": "點擊 + 新增你的第一瓶啤酒",
+  "beerAddBeer": "新增啤酒",
+  "beerAdded": "成功新增啤酒！",
+  "beerAddFailed": "新增啤酒失敗：{error}",
+
+  "beerBrandName": "品牌名稱",
+  "beerBrandNameHint": "例如：台灣啤酒",
+  "beerName": "啤酒名稱",
+  "beerNameHint": "例如：經典拉格",
+  "beerStyle": "啤酒風格",
+  "beerStyleHint": "例如：拉格",
+
+  "beerValidationBrandRequired": "品牌名稱為必填",
+  "beerValidationNameRequired": "啤酒名稱為必填",
+  "beerValidationStyleRequired": "啤酒風格為必填",
+
+  "authLogin": "登入",
+  "authRegister": "註冊",
+  "authEmail": "電子郵件",
+  "authPassword": "密碼",
+  "authConfirmPassword": "確認密碼",
+  "authName": "姓名",
+  "authLoginFailed": "登入失敗",
+  "authRegisterFailed": "註冊失敗",
+
+  "profileTitle": "會員資料",
+  "profileLanguageSettings": "語言設定",
+  "profileNotificationSettings": "通知設定",
+  "profilePrivacySettings": "隱私設定",
+  "profileAbout": "關於應用",
+  "profileLogout": "登出",
+  "profileConfirmLogout": "確認登出",
+  "profileLogoutMessage": "您確定要登出嗎？",
+
+  "chartTitle": "圖表統計",
+  "chartMonthlyStats": "本月統計",
+  "chartTotal": "總數量",
+  "chartThisMonth": "本月",
+  "chartBrands": "品牌數",
+  "chartFavoriteBrands": "最愛品牌",
+  "chartTimes": "{count} 次",
+
+  "navHome": "首頁",
+  "navAdd": "新增",
+  "navProfile": "會員"
+}

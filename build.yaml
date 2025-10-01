@@ -1,0 +1,33 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        generate_for:
+          - lib/data/models/*.dart
+        options:
+          # Freezed configuration
+          explicit_to_json: true
+
+      json_serializable:
+        generate_for:
+          - lib/data/models/*.dart
+        options:
+          # JSON serialization configuration
+          explicit_to_json: true
+          field_rename: snake
+          include_if_null: false
+
+      retrofit_generator:
+        generate_for:
+          - lib/data/services/*.dart
+
+      riverpod_generator:
+        generate_for:
+          - lib/**/*.dart
+        options:
+          # Riverpod generator configuration
+          provider_name_prefix: ""
+
+      hive_generator:
+        generate_for:
+          - lib/data/models/*.dart

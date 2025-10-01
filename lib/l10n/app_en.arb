@@ -1,0 +1,75 @@
+{
+  "@@locale": "en",
+  "@@last_modified": "2025-10-01T10:00:00.000Z",
+
+  "commonAdd": "Add",
+  "commonRetry": "Retry",
+  "commonLoadFailed": "Failed to load",
+  "commonCancel": "Cancel",
+  "commonConfirm": "Confirm",
+  "commonSave": "Save",
+  "commonDelete": "Delete",
+  "commonEdit": "Edit",
+
+  "beerMyBeers": "My Beers",
+  "beerNoneYet": "No beers yet",
+  "beerTapToAdd": "Tap + to add your first beer",
+  "beerAddBeer": "Add Beer",
+  "beerAdded": "Beer added successfully!",
+  "beerAddFailed": "Failed to add beer: {error}",
+  "@beerAddFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "beerBrandName": "Brand Name",
+  "beerBrandNameHint": "e.g. Taiwan Beer",
+  "beerName": "Beer Name",
+  "beerNameHint": "e.g. Classic Lager",
+  "beerStyle": "Style",
+  "beerStyleHint": "e.g. Lager",
+
+  "beerValidationBrandRequired": "Brand name is required",
+  "beerValidationNameRequired": "Beer name is required",
+  "beerValidationStyleRequired": "Style is required",
+
+  "authLogin": "Login",
+  "authRegister": "Register",
+  "authEmail": "Email",
+  "authPassword": "Password",
+  "authConfirmPassword": "Confirm Password",
+  "authName": "Name",
+  "authLoginFailed": "Login failed",
+  "authRegisterFailed": "Registration failed",
+
+  "profileTitle": "Profile",
+  "profileLanguageSettings": "Language Settings",
+  "profileNotificationSettings": "Notification Settings",
+  "profilePrivacySettings": "Privacy Settings",
+  "profileAbout": "About App",
+  "profileLogout": "Logout",
+  "profileConfirmLogout": "Confirm Logout",
+  "profileLogoutMessage": "Are you sure you want to logout?",
+
+  "chartTitle": "Statistics",
+  "chartMonthlyStats": "Monthly Statistics",
+  "chartTotal": "Total",
+  "chartThisMonth": "This Month",
+  "chartBrands": "Brands",
+  "chartFavoriteBrands": "Favorite Brands",
+  "chartTimes": "{count} times",
+  "@chartTimes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+
+  "navHome": "Home",
+  "navAdd": "Add",
+  "navProfile": "Profile"
+}
