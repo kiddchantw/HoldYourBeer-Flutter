@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'auth_models.g.dart';
-
-@JsonSerializable()
 class LoginRequest {
   final String email;
   final String password;
@@ -12,13 +7,21 @@ class LoginRequest {
     required this.password,
   });
 
-  factory LoginRequest.fromJson(Map<String, dynamic> json) =>
-      _$LoginRequestFromJson(json);
+  factory LoginRequest.fromJson(Map<String, dynamic> json) {
+    return LoginRequest(
+      email: json['email'] as String,
+      password: json['password'] as String,
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$LoginRequestToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'email': email,
+      'password': password,
+    };
+  }
 }
 
-@JsonSerializable()
 class LoginResponse {
   final UserData user;
   final String token;
@@ -28,22 +31,27 @@ class LoginResponse {
     required this.token,
   });
 
-  factory LoginResponse.fromJson(Map<String, dynamic> json) =>
-      _$LoginResponseFromJson(json);
+  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    return LoginResponse(
+      user: UserData.fromJson(json['user'] as Map<String, dynamic>),
+      token: json['token'] as String,
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$LoginResponseToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'user': user.toJson(),
+      'token': token,
+    };
+  }
 }
 
-@JsonSerializable()
 class UserData {
   final int id;
   final String name;
   final String email;
-  @JsonKey(name: 'email_verified_at')
   final String? emailVerifiedAt;
-  @JsonKey(name: 'created_at')
   final String createdAt;
-  @JsonKey(name: 'updated_at')
   final String updatedAt;
 
   UserData({
@@ -55,18 +63,33 @@ class UserData {
     required this.updatedAt,
   });
 
-  factory UserData.fromJson(Map<String, dynamic> json) =>
-      _$UserDataFromJson(json);
+  factory UserData.fromJson(Map<String, dynamic> json) {
+    return UserData(
+      id: json['id'] as int,
+      name: json['name'] as String,
+      email: json['email'] as String,
+      emailVerifiedAt: json['email_verified_at'] as String?,
+      createdAt: json['created_at'] as String,
+      updatedAt: json['updated_at'] as String,
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$UserDataToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'email_verified_at': emailVerifiedAt,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
+    };
+  }
 }
 
-@JsonSerializable()
 class RegisterRequest {
   final String name;
   final String email;
   final String password;
-  @JsonKey(name: 'password_confirmation')
   final String passwordConfirmation;
 
   RegisterRequest({
@@ -76,20 +99,39 @@ class RegisterRequest {
     required this.passwordConfirmation,
   });
 
-  factory RegisterRequest.fromJson(Map<String, dynamic> json) =>
-      _$RegisterRequestFromJson(json);
+  factory RegisterRequest.fromJson(Map<String, dynamic> json) {
+    return RegisterRequest(
+      name: json['name'] as String,
+      email: json['email'] as String,
+      password: json['password'] as String,
+      passwordConfirmation: json['password_confirmation'] as String,
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$RegisterRequestToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'email': email,
+      'password': password,
+      'password_confirmation': passwordConfirmation,
+    };
+  }
 }
 
-@JsonSerializable()
 class LogoutResponse {
   final String message;
 
   LogoutResponse({required this.message});
 
-  factory LogoutResponse.fromJson(Map<String, dynamic> json) =>
-      _$LogoutResponseFromJson(json);
+  factory LogoutResponse.fromJson(Map<String, dynamic> json) {
+    return LogoutResponse(
+      message: json['message'] as String,
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$LogoutResponseToJson(this);
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+    };
+  }
 }

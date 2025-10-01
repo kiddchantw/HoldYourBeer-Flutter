@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import '../../../shared/themes/beer_colors.dart';
 import '../../../shared/widgets/language_dialog.dart';
 import '../../../core/auth/auth_provider.dart';
+import '../../../core/i18n/locale_provider.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -11,16 +14,21 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authStateProvider);
+    final currentLocale = ref.watch(localeProvider);
+    final l10n = AppLocalizations.of(context)!;
+    final languageLabel = currentLocale.languageCode == 'zh'
+        ? l10n.languageTraditionalChinese
+        : l10n.languageEnglish;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('會員資料'),
+        title: Text(l10n.profileTitle),
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () => _showLogoutDialog(context, ref),
-            tooltip: '登出',
+            tooltip: l10n.profileLogout,
           ),
         ],
       ),
@@ -80,23 +88,24 @@ class ProfileScreen extends ConsumerWidget {
             // 設定選項
             _buildSettingItem(
               icon: Icons.language,
-              title: '語言設定',
+              title: l10n.profileLanguageSettings,
               onTap: () => showLanguageDialog(context),
+              trailingLabel: languageLabel,
             ),
 
             // 通知設定已移除
 
             _buildSettingItem(
               icon: Icons.security,
-              title: '隱私設定',
+              title: l10n.profilePrivacySettings,
               onTap: () {
-                Navigator.of(context).pushNamed('/privacy');
+                context.push('/privacy');
               },
             ),
 
             _buildSettingItem(
               icon: Icons.info,
-              title: '關於應用',
+              title: l10n.profileAbout,
               onTap: () {
                 showAboutDialog(
                   context: context,
@@ -134,6 +143,7 @@ class ProfileScreen extends ConsumerWidget {
     required IconData icon,
     required String title,
     required VoidCallback onTap,
+    String? trailingLabel,
   }) {
     return Container(
       margin: EdgeInsets.only(bottom: 12.h),
@@ -158,10 +168,27 @@ class ProfileScreen extends ConsumerWidget {
             color: BeerColors.textDark,
           ),
         ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          size: 16.sp,
-          color: BeerColors.gray400,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (trailingLabel != null)
+              Padding(
+                padding: EdgeInsets.only(right: 8.w),
+                child: Text(
+                  trailingLabel,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: BeerColors.textMuted,
+                  ),
+                  textAlign: TextAlign.right,
+                ),
+              ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16.sp,
+              color: BeerColors.gray400,
+            ),
+          ],
         ),
         onTap: onTap,
         shape: RoundedRectangleBorder(

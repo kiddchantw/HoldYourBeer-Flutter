@@ -9,6 +9,7 @@ import '../network/api_client.dart';
 import '../../features/navigation/screens/main_scaffold_new.dart';
 import '../../features/profile/screens/privacy_settings_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
+import '../../features/tasting_history/screens/tasting_history_screen.dart';
 
 // 用戶模型 - 基於 API 回應
 class User {
@@ -198,6 +199,14 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/privacy',
         builder: (context, state) => const PrivacySettingsScreen(),
+      ),
+      GoRoute(
+        path: '/beers/:id/history',
+        builder: (context, state) {
+          final beerId = state.pathParameters['id']!;
+          final title = state.uri.queryParameters['title'];
+          return TastingHistoryScreen(beerId: beerId, title: title);
+        },
       ),
     ],
   );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 import '../../../shared/themes/beer_colors.dart';
 
 // 簡化的啤酒數據模型
@@ -21,6 +22,25 @@ class BeerItem {
 // 啤酒列表狀態管理
 final beerListProvider = StateNotifierProvider<BeerListNotifier, List<BeerItem>>((ref) {
   return BeerListNotifier();
+});
+
+// 搜尋查詢狀態
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
+// 過濾後的啤酒清單
+final filteredBeerListProvider = Provider<List<BeerItem>>((ref) {
+  final beerList = ref.watch(beerListProvider);
+  final searchQuery = ref.watch(searchQueryProvider);
+
+  if (searchQuery.isEmpty) {
+    return beerList;
+  }
+
+  return beerList.where((beer) {
+    final query = searchQuery.toLowerCase();
+    return beer.name.toLowerCase().contains(query) ||
+           beer.brand.toLowerCase().contains(query);
+  }).toList();
 });
 
 class BeerListNotifier extends StateNotifier<List<BeerItem>> {
@@ -65,19 +85,30 @@ class BeerListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final beerList = ref.watch(beerListProvider);
+    final beerList = ref.watch(filteredBeerListProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('我的啤酒'),
+        title: searchQuery.isEmpty
+          ? const Text('我的啤酒')
+          : Text('搜尋結果: $searchQuery'),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: () {
+            _showSearchDialog(context, ref);
+          },
+        ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.share),
+            icon: const Icon(Icons.refresh),
             onPressed: () {
-              // 分享功能
+              // 刷新頁面並清除搜尋
+              ref.read(searchQueryProvider.notifier).state = '';
+              ref.invalidate(beerListProvider);
             },
           ),
         ],
@@ -123,21 +154,26 @@ class BeerListScreen extends ConsumerWidget {
   }
 
   Widget _buildBeerCard(BuildContext context, WidgetRef ref, BeerItem beer) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16.h),
-      padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10.r,
-            offset: Offset(0, 2.h),
-          ),
-        ],
-      ),
-      child: Row(
+    return InkWell(
+      onTap: () {
+        context.push('/beers/${beer.id}/history?title=${Uri.encodeComponent('${beer.brand} ${beer.name}')}');
+      },
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        margin: EdgeInsets.only(bottom: 16.h),
+        padding: EdgeInsets.all(16.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10.r,
+              offset: Offset(0, 2.h),
+            ),
+          ],
+        ),
+        child: Row(
         children: [
           // 啤酒圖標
           Container(
@@ -255,12 +291,7 @@ class BeerListScreen extends ConsumerWidget {
           // 歷史按鈕
           GestureDetector(
             onTap: () {
-              // 顯示歷史記錄
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('${beer.brand} ${beer.name} 的歷史記錄'),
-                ),
-              );
+              context.push('/beers/${beer.id}/history?title=${Uri.encodeComponent('${beer.brand} ${beer.name}')}');
             },
             child: Container(
               width: 32.w,
@@ -278,6 +309,71 @@ class BeerListScreen extends ConsumerWidget {
           ),
         ],
       ),
+    ));
+  }
+}
+
+// 搜尋對話框功能
+void _showSearchDialog(BuildContext context, WidgetRef ref) {
+  showDialog(
+    context: context,
+    builder: (context) => SearchDialog(ref: ref),
+  );
+}
+
+class SearchDialog extends StatefulWidget {
+  final WidgetRef ref;
+
+  const SearchDialog({Key? key, required this.ref}) : super(key: key);
+
+  @override
+  State<SearchDialog> createState() => _SearchDialogState();
+}
+
+class _SearchDialogState extends State<SearchDialog> {
+  final TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('搜尋啤酒'),
+      content: TextField(
+        controller: searchController,
+        decoration: const InputDecoration(
+          hintText: '輸入啤酒名稱或品牌...',
+          prefixIcon: Icon(Icons.search),
+          border: OutlineInputBorder(),
+        ),
+        autofocus: true,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('取消'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final searchText = searchController.text.trim();
+            widget.ref.read(searchQueryProvider.notifier).state = searchText;
+            Navigator.of(context).pop();
+            if (searchText.isNotEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('搜尋: $searchText'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
+          },
+          child: const Text('確定'),
+        ),
+      ],
     );
   }
 }

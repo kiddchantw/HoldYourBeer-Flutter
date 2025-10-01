@@ -1,8 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
-
-part 'api_response.g.dart';
-
-@JsonSerializable(genericArgumentFactories: true)
 class ApiResponse<T> {
   final T? data;
   final String? message;
@@ -17,11 +12,21 @@ class ApiResponse<T> {
   factory ApiResponse.fromJson(
     Map<String, dynamic> json,
     T Function(Object? json) fromJsonT,
-  ) =>
-      _$ApiResponseFromJson(json, fromJsonT);
+  ) {
+    return ApiResponse<T>(
+      data: json['data'] != null ? fromJsonT(json['data']) : null,
+      message: json['message'] as String?,
+      success: json['success'] as bool? ?? true,
+    );
+  }
 
-  Map<String, dynamic> toJson(Object Function(T value) toJsonT) =>
-      _$ApiResponseToJson(this, toJsonT);
+  Map<String, dynamic> toJson(Object Function(T value) toJsonT) {
+    return {
+      'data': data != null ? toJsonT(data as T) : null,
+      'message': message,
+      'success': success,
+    };
+  }
 
   factory ApiResponse.success(T data, {String? message}) => ApiResponse(
         data: data,
