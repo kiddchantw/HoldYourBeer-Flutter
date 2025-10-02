@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/themes/beer_colors.dart';
+import 'beer_detail_screen_api.dart';
 
 // 簡化的啤酒數據模型
 class BeerItem {
@@ -156,7 +157,15 @@ class BeerListScreen extends ConsumerWidget {
   Widget _buildBeerCard(BuildContext context, WidgetRef ref, BeerItem beer) {
     return InkWell(
       onTap: () {
-        context.push('/beers/${beer.id}/history?title=${Uri.encodeComponent('${beer.brand} ${beer.name}')}');
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => BeerDetailScreen(
+              beerId: beer.id,
+              brand: beer.brand,
+              name: beer.name,
+            ),
+          ),
+        );
       },
       borderRadius: BorderRadius.circular(16.r),
       child: Container(
