@@ -4,10 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/themes/beer_colors.dart';
 import 'beer_detail_screen_api.dart';
+import '../providers/tasting_provider.dart';
 
 // 簡化的啤酒數據模型
 class BeerItem {
-  final String id;
+  final int id;
   final String brand;
   final String name;
   int count;
@@ -46,11 +47,11 @@ final filteredBeerListProvider = Provider<List<BeerItem>>((ref) {
 
 class BeerListNotifier extends StateNotifier<List<BeerItem>> {
   BeerListNotifier() : super([
-    BeerItem(id: '1', brand: 'BrewDog', name: 'Punk IPA', count: 14),
-    BeerItem(id: '2', brand: 'Taiwan Beer', name: 'Golden', count: 3),
+    BeerItem(id: 1, brand: 'BrewDog', name: 'Punk IPA', count: 14),
+    BeerItem(id: 2, brand: 'Taiwan Beer', name: 'Golden', count: 3),
   ]);
 
-  void incrementBeer(String id) {
+  void incrementBeer(int id) {
     state = [
       for (final beer in state)
         if (beer.id == id)
@@ -60,7 +61,7 @@ class BeerListNotifier extends StateNotifier<List<BeerItem>> {
     ];
   }
 
-  void decrementBeer(String id) {
+  void decrementBeer(int id) {
     state = [
       for (final beer in state)
         if (beer.id == id && beer.count > 0)
@@ -72,7 +73,7 @@ class BeerListNotifier extends StateNotifier<List<BeerItem>> {
 
   void addBeer(String brand, String name) {
     final newBeer = BeerItem(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: DateTime.now().millisecondsSinceEpoch,
       brand: brand,
       name: name,
       count: 1,
@@ -160,7 +161,7 @@ class BeerListScreen extends ConsumerWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder: (context) => BeerDetailScreen(
-              beerId: beer.id,
+              beerId: beer.id.toString(),
               brand: beer.brand,
               name: beer.name,
             ),
@@ -184,18 +185,23 @@ class BeerListScreen extends ConsumerWidget {
         ),
         child: Row(
         children: [
-          // 啤酒圖標
+          // 數量顯示圓圈
           Container(
             width: 48.w,
             height: 48.w,
             decoration: BoxDecoration(
-              color: BeerColors.primaryAmber500.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12.r),
+              color: BeerColors.info800,
+              borderRadius: BorderRadius.circular(24.r),
             ),
-            child: Icon(
-              Icons.local_bar,
-              color: BeerColors.primaryAmber500,
-              size: 24.sp,
+            child: Center(
+              child: Text(
+                '${beer.count}',
+                style: TextStyle(
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
 
@@ -207,6 +213,13 @@ class BeerListScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
+                  beer.brand,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: BeerColors.textMuted,
+                  ),
+                ),
+                Text(
                   beer.name,
                   style: TextStyle(
                     fontSize: 16.sp,
@@ -214,81 +227,78 @@ class BeerListScreen extends ConsumerWidget {
                     color: BeerColors.textDark,
                   ),
                 ),
-                Text(
-                  beer.brand,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: BeerColors.textMuted,
-                  ),
-                ),
               ],
             ),
           ),
 
-          // 數量顯示
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-            decoration: BoxDecoration(
-              color: BeerColors.info800.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12.r),
-            ),
-            child: Text(
-              '${beer.count}',
-              style: TextStyle(
-                fontSize: 18.sp,
-                fontWeight: FontWeight.bold,
-                color: BeerColors.info800,
-              ),
-            ),
-          ),
-
-          SizedBox(width: 8.w),
 
           // 控制按鈕
-          Column(
+          Row(
             children: [
               // 增加按鈕
               GestureDetector(
-                onTap: () {
-                  ref.read(beerListProvider.notifier).incrementBeer(beer.id);
+                onTap: () async {
+                  try {
+                    // 先更新本地狀態（樂觀更新）
+                    ref.read(beerListProvider.notifier).incrementBeer(beer.id);
+                    // 呼叫 API
+                    await ref.read(tastingActionsProvider).incrementBeer(beer.id);
+                  } catch (e) {
+                    // 如果 API 失敗，回復本地狀態
+                    ref.read(beerListProvider.notifier).decrementBeer(beer.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('增加失敗: $e')),
+                    );
+                  }
                 },
                 child: Container(
-                  width: 32.w,
-                  height: 32.w,
+                  width: 48.w,
+                  height: 48.w,
                   decoration: BoxDecoration(
                     color: BeerColors.success700,
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
                     Icons.add,
                     color: Colors.white,
-                    size: 18.sp,
+                    size: 27.sp,
                   ),
                 ),
               ),
 
-              SizedBox(height: 8.h),
+              SizedBox(width: 8.w),
 
               // 減少按鈕
               GestureDetector(
-                onTap: () {
+                onTap: () async {
                   if (beer.count > 0) {
-                    ref.read(beerListProvider.notifier).decrementBeer(beer.id);
+                    try {
+                      // 先更新本地狀態（樂觀更新）
+                      ref.read(beerListProvider.notifier).decrementBeer(beer.id);
+                      // 呼叫 API
+                      await ref.read(tastingActionsProvider).decrementBeer(beer.id);
+                    } catch (e) {
+                      // 如果 API 失敗，回復本地狀態
+                      ref.read(beerListProvider.notifier).incrementBeer(beer.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('減少失敗: $e')),
+                      );
+                    }
                   }
                 },
                 child: Container(
-                  width: 32.w,
-                  height: 32.w,
+                  width: 48.w,
+                  height: 48.w,
                   decoration: BoxDecoration(
                     color: beer.count > 0
                         ? BeerColors.error700
                         : BeerColors.gray400,
-                    borderRadius: BorderRadius.circular(8.r),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
                     Icons.remove,
                     color: Colors.white,
-                    size: 18.sp,
+                    size: 27.sp,
                   ),
                 ),
               ),
@@ -300,7 +310,15 @@ class BeerListScreen extends ConsumerWidget {
           // 歷史按鈕
           GestureDetector(
             onTap: () {
-              context.push('/beers/${beer.id}/history?title=${Uri.encodeComponent('${beer.brand} ${beer.name}')}');
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => BeerDetailScreen(
+                    beerId: beer.id.toString(),
+                    brand: beer.brand,
+                    name: beer.name,
+                  ),
+                ),
+              );
             },
             child: Container(
               width: 32.w,

@@ -103,199 +103,199 @@ class _BeerDetailScreenState extends ConsumerState<BeerDetailScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // 歷史記錄列表
-          Expanded(
-            child: tastingLogsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (error, stack) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error, color: Colors.red, size: 48),
-                    const SizedBox(height: 16),
-                    Text(
-                      '載入失敗: $error',
-                      style: const TextStyle(color: Colors.red),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => ref.invalidate(tastingLogsProvider(beerId)),
-                      child: const Text('重試'),
-                    ),
-                  ],
-                ),
-              ),
-              data: (tastingLogs) {
-                if (tastingLogs.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      '尚無飲酒記錄',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // 歷史記錄列表
+            Expanded(
+              child: tastingLogsAsync.when(
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, stack) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error, color: Colors.red, size: 48),
+                      const SizedBox(height: 16),
+                      Text(
+                        '載入失敗: $error',
+                        style: const TextStyle(color: Colors.red),
+                        textAlign: TextAlign.center,
                       ),
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: tastingLogs.length,
-                  itemBuilder: (context, index) {
-                    final record = tastingLogs[index];
-                    final isAdd = record.action == 'increment';
-
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // 操作圖示
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: isAdd ? Colors.green : Colors.red,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              isAdd ? Icons.check : Icons.close,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          // 記錄內容
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                // 時間戳記
-                                Text(
-                                  DateTimeUtils.formatUserFriendly(record.tastedAt),
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                // 詳細時間（小字）
-                                Text(
-                                  DateTimeUtils.formatRelative(record.tastedAt),
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                                // 品嚐記錄
-                                if (record.note != null && record.note!.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[100],
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: Text(
-                                      record.note!,
-                                      style: const TextStyle(
-                                        fontSize: 14,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ],
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => ref.invalidate(tastingLogsProvider(beerId)),
+                        child: const Text('重試'),
+                      ),
+                    ],
+                  ),
+                ),
+                data: (tastingLogs) {
+                  if (tastingLogs.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        '尚無飲酒記錄',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
                       ),
                     );
-                  },
-                );
-              },
-            ),
-          ),
-          // 品嚐記錄輸入區域
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                top: BorderSide(
-                  color: Colors.grey[300]!,
-                  width: 1,
-                ),
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    itemCount: tastingLogs.length,
+                    itemBuilder: (context, index) {
+                      final record = tastingLogs[index];
+                      final isAdd = record.action == 'increment';
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // 操作圖示
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: isAdd ? Colors.green : Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                isAdd ? Icons.check : Icons.close,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            // 記錄內容
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // 時間戳記
+                                  Text(
+                                    DateTimeUtils.formatUserFriendly(record.tastedAt),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  // 詳細時間（小字）
+                                  Text(
+                                    DateTimeUtils.formatRelative(record.tastedAt),
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  // 品嚐記錄
+                                  if (record.note != null && record.note!.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        record.note!,
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontStyle: FontStyle.italic,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '品嚐記錄 (選填)',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: _noteController,
-                  focusNode: _noteFocusNode,
-                  maxLines: 3,
-                  maxLength: 150,
-                  enabled: !_isLoading,
-                  decoration: InputDecoration(
-                    hintText: '輸入品嚐記錄...',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.grey[300]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: const BorderSide(color: BeerColors.primaryAmber500),
-                    ),
-                    contentPadding: const EdgeInsets.all(12),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _addTastingNote,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: BeerColors.primaryAmber500,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : const Text(
-                            '新增品嚐記錄',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                  ),
-                ),
-              ],
+            // 分隔線
+            Divider(
+              height: 1,
+              thickness: 1,
+              color: Colors.grey[300],
             ),
-          ),
-        ],
+            // 品嚐記錄輸入區域
+            Container(
+              padding: const EdgeInsets.all(16),
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '品嚐記錄 (選填)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _noteController,
+                    focusNode: _noteFocusNode,
+                    maxLines: 3,
+                    maxLength: 150,
+                    enabled: !_isLoading,
+                    decoration: InputDecoration(
+                      hintText: '輸入品嚐記錄...',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide(color: Colors.grey[300]!),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: BeerColors.primaryAmber500),
+                      ),
+                      contentPadding: const EdgeInsets.all(12),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _addTastingNote,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: BeerColors.primaryAmber500,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text(
+                              '新增品嚐記錄',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
