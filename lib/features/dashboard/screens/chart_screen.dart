@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../shared/themes/beer_colors.dart';
+import '../../../shared/widgets/background/background.dart';
 import '../../../widgets/brand_pie_chart.dart';
 import '../../../models/chart_data.dart';
 import '../../charts/providers/chart_provider.dart';
@@ -14,13 +15,25 @@ class ChartScreen extends ConsumerWidget {
     final chartDataAsync = ref.watch(chartDataProvider);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('圖表統計'),
+        title: Text(
+          '圖表統計',
+          style: TextStyle(
+            color: BeerColors.textDark,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
+      body: BeerGradientBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 統計卡片
@@ -28,13 +41,18 @@ class ChartScreen extends ConsumerWidget {
               width: double.infinity,
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10.r,
-                    offset: Offset(0, 5.h),
+                    blurRadius: 15.r,
+                    offset: Offset(0, 8.h),
+                  ),
+                  BoxShadow(
+                    color: BeerColors.primaryAmber300.withOpacity(0.1),
+                    blurRadius: 20.r,
+                    offset: Offset(0, 4.h),
                   ),
                 ],
               ),
@@ -80,9 +98,11 @@ class ChartScreen extends ConsumerWidget {
               loading: () => const SizedBox.shrink(),
               error: (error, stack) => const SizedBox.shrink(),
             ),
-          ],
+            ],
+          ),
         ),
       ),
+    ),
     );
   }
 
@@ -91,13 +111,18 @@ class ChartScreen extends ConsumerWidget {
       width: double.infinity,
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.95),
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 10.r,
-            offset: Offset(0, 5.h),
+            blurRadius: 15.r,
+            offset: Offset(0, 8.h),
+          ),
+          BoxShadow(
+            color: BeerColors.primaryAmber300.withOpacity(0.1),
+            blurRadius: 20.r,
+            offset: Offset(0, 4.h),
           ),
         ],
       ),
@@ -130,13 +155,18 @@ class ChartScreen extends ConsumerWidget {
       width: double.infinity,
       height: 300.h,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.95),
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 10.r,
-            offset: Offset(0, 5.h),
+            blurRadius: 15.r,
+            offset: Offset(0, 8.h),
+          ),
+          BoxShadow(
+            color: BeerColors.primaryAmber300.withOpacity(0.1),
+            blurRadius: 20.r,
+            offset: Offset(0, 4.h),
           ),
         ],
       ),
@@ -166,13 +196,18 @@ class ChartScreen extends ConsumerWidget {
       width: double.infinity,
       height: 300.h,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.95),
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 10.r,
-            offset: Offset(0, 5.h),
+            blurRadius: 15.r,
+            offset: Offset(0, 8.h),
+          ),
+          BoxShadow(
+            color: BeerColors.primaryAmber300.withOpacity(0.1),
+            blurRadius: 20.r,
+            offset: Offset(0, 4.h),
           ),
         ],
       ),
@@ -230,13 +265,18 @@ class ChartScreen extends ConsumerWidget {
       width: double.infinity,
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.95),
         borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
-            blurRadius: 10.r,
-            offset: Offset(0, 5.h),
+            blurRadius: 15.r,
+            offset: Offset(0, 8.h),
+          ),
+          BoxShadow(
+            color: BeerColors.primaryAmber300.withOpacity(0.1),
+            blurRadius: 20.r,
+            offset: Offset(0, 4.h),
           ),
         ],
       ),

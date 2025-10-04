@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/themes/beer_colors.dart';
+import '../../../shared/widgets/background/background.dart';
 import 'beer_detail_screen_api.dart';
 import '../providers/tasting_provider.dart';
 
@@ -91,22 +92,34 @@ class BeerListScreen extends ConsumerWidget {
     final searchQuery = ref.watch(searchQueryProvider);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: searchQuery.isEmpty
-          ? const Text('我的啤酒')
-          : Text('搜尋結果: $searchQuery'),
+        title: Text(
+          searchQuery.isEmpty ? '我的啤酒' : '搜尋結果: $searchQuery',
+          style: TextStyle(
+            color: BeerColors.textDark,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.search),
+          icon: Icon(
+            Icons.search,
+            color: BeerColors.primaryAmber600,
+          ),
           onPressed: () {
             _showSearchDialog(context, ref);
           },
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(
+              Icons.refresh,
+              color: BeerColors.primaryAmber600,
+            ),
             onPressed: () {
               // 刷新頁面並清除搜尋
               ref.read(searchQueryProvider.notifier).state = '';
@@ -115,33 +128,52 @@ class BeerListScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: beerList.isEmpty
-          ? const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.local_bar,
-                    size: 64,
-                    color: Colors.grey,
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    '還沒有啤酒記錄',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey,
+      body: BeerGradientBackground(
+        child: SafeArea(
+          child: beerList.isEmpty
+          ? Center(
+              child: Container(
+                padding: EdgeInsets.all(32.w),
+                margin: EdgeInsets.symmetric(horizontal: 24.w),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(20.r),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 20.r,
+                      offset: Offset(0, 8.h),
                     ),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    '點擊右下角的 + 來新增你的第一杯啤酒',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.sports_bar,
+                      size: 64.sp,
+                      color: BeerColors.primaryAmber400,
                     ),
-                  ),
-                ],
+                    SizedBox(height: 16.h),
+                    Text(
+                      '還沒有啤酒記錄',
+                      style: TextStyle(
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        color: BeerColors.textDark,
+                      ),
+                    ),
+                    SizedBox(height: 8.h),
+                    Text(
+                      '點擊右下角的 + 來新增你的第一杯啤酒',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: BeerColors.textMuted,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
               ),
             )
           : ListView.builder(
@@ -152,6 +184,8 @@ class BeerListScreen extends ConsumerWidget {
                 return _buildBeerCard(context, ref, beer);
               },
             ),
+        ),
+      ),
     );
   }
 
@@ -173,12 +207,17 @@ class BeerListScreen extends ConsumerWidget {
         margin: EdgeInsets.only(bottom: 16.h),
         padding: EdgeInsets.all(16.w),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.white.withOpacity(0.95),
           borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10.r,
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 15.r,
+              offset: Offset(0, 4.h),
+            ),
+            BoxShadow(
+              color: BeerColors.primaryAmber300.withOpacity(0.1),
+              blurRadius: 20.r,
               offset: Offset(0, 2.h),
             ),
           ],

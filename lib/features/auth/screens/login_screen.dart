@@ -5,6 +5,7 @@ import '../../../shared/themes/beer_colors.dart';
 import '../../../core/auth/auth_provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/circular_language_selector.dart';
+import '../../../shared/widgets/background/background.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -45,260 +46,65 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final authState = ref.watch(authStateProvider);
 
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          // 啤酒主題漸層背景
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              BeerColors.primaryAmber200,
-              BeerColors.primaryAmber100,
-              Color(0xFFFFF8E1), // 淺啤酒色
+      body: LoginBackground(
+        enableBubbleAnimation: true,
+        bubbleAnimationDuration: 4.0,
+        child: SafeArea(
+          child: Stack(
+            children: [
+              // 主要登入內容
+              SingleChildScrollView(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: SizedBox(
+                  height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Spacer(),
+
+                      // Logo 區域
+                      _buildLogoSection(),
+
+                      SizedBox(height: 20.h), // 從 30.h 減少到 20.h (減少 10px)
+
+                      // 登入表單
+                      _buildLoginForm(),
+
+                      const Spacer(),
+
+                      // 底部裝飾文字
+                      _buildFooterText(),
+                      SizedBox(height: 30.h),
+                    ],
+                  ),
+                ),
+              ),
+
+              // 語系切換按鈕 - 與下方email區塊左邊對齊
+              Positioned(
+                top: 8.h,
+                left: 48.w, // 24.w (主要padding) + 24.w (表單padding) = 48.w
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 12.r,
+                        offset: Offset(0, 6.h),
+                      ),
+                    ],
+                  ),
+                  child: const CircularLanguageSelector(),
+                ),
+              ),
             ],
           ),
-        ),
-        child: Stack(
-          children: [
-            // 背景裝飾元素
-            _buildBackgroundDecorations(),
-
-            // 主要內容
-            SafeArea(
-              child: Stack(
-                children: [
-                  // 主要登入內容
-                  SingleChildScrollView(
-                    padding: EdgeInsets.symmetric(horizontal: 24.w),
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Spacer(),
-
-                          // Logo 區域
-                          _buildLogoSection(),
-
-                          SizedBox(height: 20.h), // 從 30.h 減少到 20.h (減少 10px)
-
-                          // 登入表單
-                          _buildLoginForm(),
-
-                          const Spacer(),
-
-                          // 底部裝飾文字
-                          _buildFooterText(),
-                          SizedBox(height: 30.h),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                  // 語系切換按鈕 - 與下方email區塊左邊對齊
-                  Positioned(
-                    top: 8.h,
-                    left: 48.w, // 24.w (主要padding) + 24.w (表單padding) = 48.w
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12.r),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            blurRadius: 12.r,
-                            offset: Offset(0, 6.h),
-                          ),
-                        ],
-                      ),
-                      child: const CircularLanguageSelector(),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ),
       ),
     );
   }
 
-  Widget _buildBackgroundDecorations() {
-    return Stack(
-      children: [
-        // 右上角大泡泡群
-        Positioned(
-          top: 30.h,
-          right: -40.w,
-          child: Container(
-            width: 150.w,
-            height: 150.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  Colors.white.withOpacity(0.3),
-                  Colors.white.withOpacity(0.05),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 70.h,
-          right: 20.w,
-          child: Container(
-            width: 80.w,
-            height: 80.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  BeerColors.yellow300.withOpacity(0.4),
-                  BeerColors.yellow300.withOpacity(0.08),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 120.h,
-          right: 60.w,
-          child: Container(
-            width: 45.w,
-            height: 45.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.25),
-            ),
-          ),
-        ),
-
-        // 中間區域的泡泡
-        Positioned(
-          top: 200.h,
-          left: 20.w,
-          child: Container(
-            width: 35.w,
-            height: 35.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  BeerColors.primaryAmber200.withOpacity(0.5),
-                  BeerColors.primaryAmber200.withOpacity(0.1),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          top: 300.h,
-          right: 15.w,
-          child: Container(
-            width: 25.w,
-            height: 25.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.3),
-            ),
-          ),
-        ),
-
-        // 左下角大泡泡群
-        Positioned(
-          bottom: 80.h,
-          left: -50.w,
-          child: Container(
-            width: 140.w,
-            height: 140.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  BeerColors.orange300.withOpacity(0.3),
-                  BeerColors.orange300.withOpacity(0.05),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 120.h,
-          left: 30.w,
-          child: Container(
-            width: 60.w,
-            height: 60.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  Colors.white.withOpacity(0.35),
-                  Colors.white.withOpacity(0.08),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 180.h,
-          left: 70.w,
-          child: Container(
-            width: 30.w,
-            height: 30.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: BeerColors.yellow200.withOpacity(0.4),
-            ),
-          ),
-        ),
-
-        // 額外的小泡泡增加層次感
-        Positioned(
-          top: 250.h,
-          left: 80.w,
-          child: Container(
-            width: 20.w,
-            height: 20.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.35),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 250.h,
-          right: 40.w,
-          child: Container(
-            width: 35.w,
-            height: 35.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  BeerColors.primaryAmber300.withOpacity(0.4),
-                  BeerColors.primaryAmber300.withOpacity(0.1),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 320.h,
-          left: 15.w,
-          child: Container(
-            width: 25.w,
-            height: 25.w,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white.withOpacity(0.3),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildLogoSection() {
     final localizations = AppLocalizations.of(context)!;

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/themes/beer_colors.dart';
+import '../../../shared/widgets/background/background.dart';
 import '../../../shared/widgets/language_dialog.dart';
 import '../../../core/auth/auth_provider.dart';
 import '../../../core/i18n/locale_provider.dart';
@@ -21,33 +22,53 @@ class ProfileScreen extends ConsumerWidget {
         : l10n.languageEnglish;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(l10n.profileTitle),
+        title: Text(
+          l10n.profileTitle,
+          style: TextStyle(
+            color: BeerColors.textDark,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: Icon(
+              Icons.logout,
+              color: BeerColors.primaryAmber600,
+            ),
             onPressed: () => _showLogoutDialog(context, ref),
             tooltip: l10n.profileLogout,
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
+      body: BeerGradientBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(16.w),
+            child: Column(
           children: [
             // 用戶資訊卡片
             Container(
               width: double.infinity,
               padding: EdgeInsets.all(20.w),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.white.withOpacity(0.95),
                 borderRadius: BorderRadius.circular(16.r),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10.r,
-                    offset: Offset(0, 5.h),
+                    blurRadius: 15.r,
+                    offset: Offset(0, 8.h),
+                  ),
+                  BoxShadow(
+                    color: BeerColors.primaryAmber300.withOpacity(0.1),
+                    blurRadius: 20.r,
+                    offset: Offset(0, 4.h),
                   ),
                 ],
               ),
@@ -119,9 +140,11 @@ class ProfileScreen extends ConsumerWidget {
             ),
 
             SizedBox(height: 20.h),
-          ],
+            ],
+          ),
         ),
       ),
+    ),
     );
   }
 
@@ -194,7 +217,7 @@ class ProfileScreen extends ConsumerWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12.r),
         ),
-        tileColor: Colors.white,
+        tileColor: Colors.white.withOpacity(0.9),
       ),
     );
   }
