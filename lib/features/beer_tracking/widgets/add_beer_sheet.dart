@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/themes/beer_colors.dart';
-import '../screens/beer_list_screen_new.dart';
+import '../providers/beer_repository_provider.dart';
 
 class AddBeerSheet extends ConsumerStatefulWidget {
   const AddBeerSheet({super.key});
@@ -26,24 +26,64 @@ class _AddBeerSheetState extends ConsumerState<AddBeerSheet> {
     super.dispose();
   }
 
-  void _handleAddBeer() {
+  Future<void> _handleAddBeer() async {
     final l10n = AppLocalizations.of(context)!;
 
     if (_formKey.currentState?.validate() ?? false) {
       final brandName = _brandController.text.trim();
       final name = _nameController.text.trim();
+      final style = _styleController.text.trim();
 
-      // 添加到啤酒列表
-      ref.read(beerListProvider.notifier).addBeer(brandName, name);
+      try {
+        // 顯示載入指示器
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => Center(
+            child: CircularProgressIndicator(
+              color: BeerColors.primaryAmber500,
+            ),
+          ),
+        );
 
-      // 顯示成功訊息
-      Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.beerAdded),
-          backgroundColor: BeerColors.success700,
-        ),
-      );
+        // 呼叫 API 創建新啤酒
+        await ref.read(beerListProvider.notifier).addBeer(
+          brand: brandName,
+          name: name,
+          style: style.isNotEmpty ? style : null,
+        );
+
+        // 關閉載入指示器
+        if (mounted) Navigator.of(context).pop();
+
+        // 關閉表單
+        if (mounted) Navigator.of(context).pop();
+
+        // 顯示成功訊息
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.beerAdded),
+              backgroundColor: BeerColors.success700,
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      } catch (e) {
+        // 關閉載入指示器
+        if (mounted) Navigator.of(context).pop();
+
+        // 顯示錯誤訊息
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('新增失敗: ${e.toString()}'),
+              backgroundColor: BeerColors.error700,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      }
     }
   }
 

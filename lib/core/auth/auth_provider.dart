@@ -6,6 +6,7 @@ import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
 import '../models/auth_models.dart';
 import '../network/api_client.dart';
+import '../utils/app_logger.dart';
 import '../../features/navigation/screens/main_scaffold_new.dart';
 import '../../features/profile/screens/privacy_settings_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
@@ -102,9 +103,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
           token ?? '',
         );
       }
-    } catch (e) {
+    } catch (e, stack) {
       // 如果背景更新失敗，保持當前狀態，不做任何處理
-      print('Background user data update failed: $e');
+      logger.w('Background user data update failed', error: e, stackTrace: stack);
     }
   }
 
@@ -147,9 +148,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> logout() async {
     try {
       await _authService.logout();
-    } catch (e) {
+    } catch (e, stack) {
       // 即使 logout API 失敗，也要更新狀態
-      print('Logout error: $e');
+      logger.e('Logout error', error: e, stackTrace: stack);
     } finally {
       state = Unauthenticated();
     }

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/tasting_api_client.dart';
+import '../../../core/utils/app_logger.dart';
 
 // 品嚐記錄 API 客戶端 Provider
 final tastingApiClientProvider = Provider<TastingApiClient>((ref) {
@@ -29,8 +30,8 @@ class TastingActions {
       await apiClient.addTastingRecord(beerId, note);
       // 刷新品嚐記錄列表
       ref.invalidate(tastingLogsProvider(beerId));
-    } catch (e) {
-      print('Error in addTastingRecord: $e');
+    } catch (e, stack) {
+      logger.e('Error in addTastingRecord', error: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -42,8 +43,8 @@ class TastingActions {
       await apiClient.incrementBeer(beerId);
       // 刷新品嚐記錄列表
       ref.invalidate(tastingLogsProvider(beerId));
-    } catch (e) {
-      print('Error in incrementBeer: $e');
+    } catch (e, stack) {
+      logger.e('Error in incrementBeer', error: e, stackTrace: stack);
       rethrow;
     }
   }
@@ -55,8 +56,8 @@ class TastingActions {
       await apiClient.decrementBeer(beerId);
       // 刷新品嚐記錄列表
       ref.invalidate(tastingLogsProvider(beerId));
-    } catch (e) {
-      print('Error in decrementBeer: $e');
+    } catch (e, stack) {
+      logger.e('Error in decrementBeer', error: e, stackTrace: stack);
       rethrow;
     }
   }

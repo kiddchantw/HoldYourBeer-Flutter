@@ -4,91 +4,17 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import '../../../shared/themes/beer_colors.dart';
 import '../../../shared/widgets/background/background.dart';
+import '../models/beer_item.dart';
+import '../providers/beer_repository_provider.dart';
 import 'beer_detail_screen_api.dart';
 import '../providers/tasting_provider.dart';
-
-// 簡化的啤酒數據模型
-class BeerItem {
-  final int id;
-  final String brand;
-  final String name;
-  int count;
-
-  BeerItem({
-    required this.id,
-    required this.brand,
-    required this.name,
-    required this.count,
-  });
-}
-
-// 啤酒列表狀態管理
-final beerListProvider = StateNotifierProvider<BeerListNotifier, List<BeerItem>>((ref) {
-  return BeerListNotifier();
-});
-
-// 搜尋查詢狀態
-final searchQueryProvider = StateProvider<String>((ref) => '');
-
-// 過濾後的啤酒清單
-final filteredBeerListProvider = Provider<List<BeerItem>>((ref) {
-  final beerList = ref.watch(beerListProvider);
-  final searchQuery = ref.watch(searchQueryProvider);
-
-  if (searchQuery.isEmpty) {
-    return beerList;
-  }
-
-  return beerList.where((beer) {
-    final query = searchQuery.toLowerCase();
-    return beer.name.toLowerCase().contains(query) ||
-           beer.brand.toLowerCase().contains(query);
-  }).toList();
-});
-
-class BeerListNotifier extends StateNotifier<List<BeerItem>> {
-  BeerListNotifier() : super([
-    BeerItem(id: 1, brand: 'BrewDog', name: 'Punk IPA', count: 14),
-    BeerItem(id: 2, brand: 'Taiwan Beer', name: 'Golden', count: 3),
-  ]);
-
-  void incrementBeer(int id) {
-    state = [
-      for (final beer in state)
-        if (beer.id == id)
-          BeerItem(id: beer.id, brand: beer.brand, name: beer.name, count: beer.count + 1)
-        else
-          beer,
-    ];
-  }
-
-  void decrementBeer(int id) {
-    state = [
-      for (final beer in state)
-        if (beer.id == id && beer.count > 0)
-          BeerItem(id: beer.id, brand: beer.brand, name: beer.name, count: beer.count - 1)
-        else
-          beer,
-    ];
-  }
-
-  void addBeer(String brand, String name) {
-    final newBeer = BeerItem(
-      id: DateTime.now().millisecondsSinceEpoch,
-      brand: brand,
-      name: name,
-      count: 1,
-    );
-    state = [...state, newBeer];
-  }
-}
 
 class BeerListScreen extends ConsumerWidget {
   const BeerListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final beerList = ref.watch(filteredBeerListProvider);
+    final beerListAsync = ref.watch(filteredBeerListProvider);
     final searchQuery = ref.watch(searchQueryProvider);
 
     return Scaffold(
@@ -123,67 +49,115 @@ class BeerListScreen extends ConsumerWidget {
             onPressed: () {
               // 刷新頁面並清除搜尋
               ref.read(searchQueryProvider.notifier).state = '';
-              ref.invalidate(beerListProvider);
+              ref.read(beerListProvider.notifier).refresh();
             },
           ),
         ],
       ),
       body: BeerGradientBackground(
         child: SafeArea(
-          child: beerList.isEmpty
-          ? Center(
-              child: Container(
-                padding: EdgeInsets.all(32.w),
-                margin: EdgeInsets.symmetric(horizontal: 24.w),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(20.r),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 20.r,
-                      offset: Offset(0, 8.h),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      Icons.sports_bar,
-                      size: 64.sp,
-                      color: BeerColors.primaryAmber400,
-                    ),
-                    SizedBox(height: 16.h),
-                    Text(
-                      '還沒有啤酒記錄',
-                      style: TextStyle(
-                        fontSize: 18.sp,
-                        fontWeight: FontWeight.w600,
-                        color: BeerColors.textDark,
-                      ),
-                    ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      '點擊右下角的 + 來新增你的第一杯啤酒',
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        color: BeerColors.textMuted,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+          child: beerListAsync.when(
+            data: (beerList) => beerList.isEmpty
+                ? _buildEmptyState()
+                : ListView.builder(
+                    padding: EdgeInsets.all(16.w),
+                    itemCount: beerList.length,
+                    itemBuilder: (context, index) {
+                      final beer = beerList[index];
+                      return _buildBeerCard(context, ref, beer);
+                    },
+                  ),
+            loading: () => Center(
+              child: CircularProgressIndicator(
+                color: BeerColors.primaryAmber500,
               ),
-            )
-          : ListView.builder(
-              padding: EdgeInsets.all(16.w),
-              itemCount: beerList.length,
-              itemBuilder: (context, index) {
-                final beer = beerList[index];
-                return _buildBeerCard(context, ref, beer);
-              },
             ),
+            error: (error, stack) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline,
+                    size: 64.sp,
+                    color: BeerColors.error700,
+                  ),
+                  SizedBox(height: 16.h),
+                  Text(
+                    '載入失敗',
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      color: BeerColors.textDark,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    error.toString(),
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      color: BeerColors.textMuted,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: 16.h),
+                  ElevatedButton(
+                    onPressed: () {
+                      ref.read(beerListProvider.notifier).refresh();
+                    },
+                    child: Text('重試'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Container(
+        padding: EdgeInsets.all(32.w),
+        margin: EdgeInsets.symmetric(horizontal: 24.w),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20.r,
+              offset: Offset(0, 8.h),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.sports_bar,
+              size: 64.sp,
+              color: BeerColors.primaryAmber400,
+            ),
+            SizedBox(height: 16.h),
+            Text(
+              '還沒有啤酒記錄',
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w600,
+                color: BeerColors.textDark,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Text(
+              '點擊右下角的 + 來新增你的第一杯啤酒',
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: BeerColors.textMuted,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );

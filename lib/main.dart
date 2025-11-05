@@ -10,6 +10,8 @@ import 'shared/themes/app_theme.dart';
 import 'core/auth/auth_provider.dart';
 import 'core/i18n/locale_provider.dart';
 import 'core/network/api_client.dart';
+import 'core/utils/app_logger.dart';
+import 'features/beer_tracking/models/beer_item.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,13 +19,18 @@ void main() async {
   // Initialize API Client
   ApiClient().initialize();
 
-  // Initialize Hive (暫時註釋掉以避免初始化問題)
-  // await Hive.initFlutter();
+  // Initialize Hive
+  await Hive.initFlutter();
 
-  // Open Hive boxes (暫時註釋掉)
-  // await Hive.openBox(AppConstants.hiveBoxName);
-  // await Hive.openBox(AppConstants.userBoxName);
-  // await Hive.openBox(AppConstants.beerBoxName);
+  // Register Hive adapters
+  Hive.registerAdapter(BeerItemAdapter());
+  logger.i('Hive adapters registered');
+
+  // Open Hive boxes
+  await Hive.openBox(AppConstants.hiveBoxName);
+  await Hive.openBox(AppConstants.userBoxName);
+  await Hive.openBox<BeerItem>(AppConstants.beerBoxName);
+  logger.i('Hive boxes opened successfully');
 
   runApp(
     const ProviderScope(

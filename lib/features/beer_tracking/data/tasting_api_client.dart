@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/utils/date_time_utils.dart';
+import '../../../core/utils/app_logger.dart';
 
 // 品嚐記錄模型
 class TastingLogResponse {
@@ -65,8 +66,8 @@ class TastingApiClient {
       final response = await _dio.get('/beers/$beerId/tasting_logs');
       final List<dynamic> data = response.data as List<dynamic>;
       return data.map((json) => TastingLogResponse.fromJson(json as Map<String, dynamic>)).toList();
-    } catch (e) {
-      print('Error fetching tasting logs: $e');
+    } catch (e, stack) {
+      logger.w('Error fetching tasting logs, returning mock data', error: e, stackTrace: stack);
       // 返回模擬資料作為備用
       return _getMockTastingLogs();
     }
@@ -80,8 +81,8 @@ class TastingApiClient {
         note: note,
       );
       await _dio.post('/beers/$beerId/count_actions', data: request.toJson());
-    } catch (e) {
-      print('Error adding tasting record: $e');
+    } catch (e, stack) {
+      logger.e('Error adding tasting record', error: e, stackTrace: stack);
       throw Exception('Failed to add tasting record');
     }
   }
@@ -91,8 +92,8 @@ class TastingApiClient {
     try {
       final request = TastingActionRequest(action: 'increment');
       await _dio.post('/beers/$beerId/count_actions', data: request.toJson());
-    } catch (e) {
-      print('Error incrementing beer: $e');
+    } catch (e, stack) {
+      logger.e('Error incrementing beer', error: e, stackTrace: stack);
       throw Exception('Failed to increment beer count');
     }
   }
@@ -102,8 +103,8 @@ class TastingApiClient {
     try {
       final request = TastingActionRequest(action: 'decrement');
       await _dio.post('/beers/$beerId/count_actions', data: request.toJson());
-    } catch (e) {
-      print('Error decrementing beer: $e');
+    } catch (e, stack) {
+      logger.e('Error decrementing beer', error: e, stackTrace: stack);
       throw Exception('Failed to decrement beer count');
     }
   }
