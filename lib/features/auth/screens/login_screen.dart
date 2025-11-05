@@ -7,6 +7,7 @@ import '../../../core/auth/auth_provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/circular_language_selector.dart';
 import '../../../shared/widgets/background/background.dart';
+import '../widgets/google_sign_in_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -204,6 +205,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
             // 忘記密碼連結
             _buildForgotPasswordLink(),
+            SizedBox(height: 16.h),
+
+            // 分隔線
+            _buildDivider(),
+            SizedBox(height: 16.h),
+
+            // Google 登入按鈕
+            _buildGoogleSignInButton(),
           ],
         ),
       ),
@@ -433,6 +442,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         color: BeerColors.primaryAmber600.withOpacity(0.7),
       ),
       textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildDivider() {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Row(
+      children: [
+        Expanded(child: Divider(color: BeerColors.gray400)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Text(
+            '或',
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: BeerColors.gray600,
+            ),
+          ),
+        ),
+        Expanded(child: Divider(color: BeerColors.gray400)),
+      ],
+    );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    final authState = ref.watch(authStateProvider);
+    final isLoading = authState is Loading;
+
+    return GoogleSignInButton(
+      isLoading: isLoading,
+      onPressed: () {
+        ref.read(authStateProvider.notifier).loginWithGoogle();
+      },
     );
   }
 

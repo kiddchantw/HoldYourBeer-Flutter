@@ -187,6 +187,47 @@ class AuthService {
     return await _apiClient.getAuthToken();
   }
 
+  /// 使用 Google ID Token 登入
+  ///
+  /// 將 Google ID Token 發送到後端進行驗證
+  /// 後端會驗證 Token 並建立或更新用戶，返回 Laravel Sanctum Token
+  Future<LoginResponse> loginWithGoogle(String idToken) async {
+    try {
+      final response = await _apiClient.dio.post(
+        '/auth/google',
+        data: {'id_token': idToken},
+      );
+
+      if (response.statusCode == 200) {
+        // Validate API response
+        final validationResult = _loginValidator.validateJson(response.data);
+        if (!validationResult.isValid) {
+          logger.e('Google login response validation failed: ${validationResult.errorMessage}');
+          throw ValidationException(validationResult);
+        }
+
+        final loginResponse = LoginResponse.fromJson(response.data);
+
+        // 儲存 token 和用戶資料
+        await _apiClient.setAuthToken(loginResponse.token);
+        await _storage.write(
+          key: AppConstants.userDataKey,
+          value: loginResponse.user.toJson().toString(),
+        );
+
+        logger.i('Google login successful for user: ${loginResponse.user.email}');
+        return loginResponse;
+      } else {
+        throw Exception('Google 登入失敗：${response.statusMessage}');
+      }
+    } on DioException catch (e) {
+      throw _handleDioError(e);
+    } catch (e) {
+      logger.e('Google login failed', error: e);
+      throw Exception('Google 登入時發生未知錯誤：$e');
+    }
+  }
+
   Future<UserData?> getStoredUserData() async {
     try {
       final userDataString = await _storage.read(key: AppConstants.userDataKey);

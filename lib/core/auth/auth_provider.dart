@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../constants/app_constants.dart';
 import '../services/auth_service.dart';
+import '../services/google_auth_service.dart';
 import '../models/auth_models.dart';
 import '../network/api_client.dart';
 import '../utils/app_logger.dart';
@@ -60,6 +61,7 @@ class AuthError extends AuthState {
 // Auth State Notifier
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthService _authService = AuthService();
+  final GoogleAuthService _googleAuthService = GoogleAuthService();
 
   AuthNotifier() : super(Loading()) {
     _initializeAuth();
@@ -160,6 +162,33 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void clearError() {
     if (state is AuthError) {
       state = Unauthenticated();
+    }
+  }
+
+  /// 使用 Google 帳號登入
+  Future<void> loginWithGoogle() async {
+    state = Loading();
+    try {
+      // 1. 使用 Google Sign-In 獲取 ID Token
+      final idToken = await _googleAuthService.signInWithGoogle();
+
+      if (idToken == null) {
+        // 使用者取消登入
+        state = Unauthenticated();
+        return;
+      }
+
+      // 2. 將 ID Token 發送到後端進行驗證
+      final loginResponse = await _authService.loginWithGoogle(idToken);
+
+      // 3. 更新狀態
+      state = Authenticated(
+        User.fromUserData(loginResponse.user),
+        loginResponse.token,
+      );
+    } catch (e) {
+      logger.e('Google login failed in AuthNotifier', error: e);
+      state = AuthError(e.toString());
     }
   }
 }
