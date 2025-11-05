@@ -5,10 +5,14 @@ import '../network/api_client.dart';
 import '../models/auth_models.dart';
 import '../constants/app_constants.dart';
 import '../utils/app_logger.dart';
+import '../validation/validators/user_data_validator.dart';
+import '../validation/validation_result.dart';
 
 class AuthService {
   final ApiClient _apiClient = ApiClient();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final LoginResponseValidator _loginValidator = LoginResponseValidator();
+  final UserDataValidator _userValidator = UserDataValidator();
 
   Future<LoginResponse> login(String email, String password) async {
     try {
@@ -20,6 +24,13 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
+        // Validate API response
+        final validationResult = _loginValidator.validateJson(response.data);
+        if (!validationResult.isValid) {
+          logger.e('Login response validation failed: ${validationResult.errorMessage}');
+          throw ValidationException(validationResult);
+        }
+
         final loginResponse = LoginResponse.fromJson(response.data);
 
         // 儲存 token 和用戶資料
@@ -60,6 +71,13 @@ class AuthService {
       );
 
       if (response.statusCode == 201) {
+        // Validate API response
+        final validationResult = _loginValidator.validateJson(response.data);
+        if (!validationResult.isValid) {
+          logger.e('Register response validation failed: ${validationResult.errorMessage}');
+          throw ValidationException(validationResult);
+        }
+
         final loginResponse = LoginResponse.fromJson(response.data);
 
         // 儲存 token 和用戶資料
@@ -97,6 +115,13 @@ class AuthService {
     try {
       final response = await _apiClient.dio.get('/user');
       if (response.statusCode == 200) {
+        // Validate API response
+        final validationResult = _userValidator.validateJson(response.data);
+        if (!validationResult.isValid) {
+          logger.w('User data validation failed: ${validationResult.errorMessage}');
+          return null;
+        }
+
         return UserData.fromJson(response.data);
       }
       return null;
@@ -116,7 +141,16 @@ class AuthService {
       });
 
       if (response.statusCode == 200) {
-        return UserData.fromJson(response.data['user']);
+        final userData = response.data['user'];
+
+        // Validate user data
+        final validationResult = _userValidator.validateJson(userData);
+        if (!validationResult.isValid) {
+          logger.e('User data validation failed: ${validationResult.errorMessage}');
+          throw ValidationException(validationResult);
+        }
+
+        return UserData.fromJson(userData);
       }
       throw Exception('更新個人資料失敗');
     } on DioException catch (e) {

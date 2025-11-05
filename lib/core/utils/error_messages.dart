@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../validation/validation_result.dart';
 
 /// User-friendly error messages utility
 ///
@@ -8,6 +9,11 @@ class ErrorMessages {
 
   /// Get user-friendly error message from any exception
   static String getMessage(dynamic error, {String? context}) {
+    // Handle validation exceptions first
+    if (error is ValidationException) {
+      return _getValidationErrorMessage(error);
+    }
+
     if (error is DioException) {
       return _getDioErrorMessage(error, context: context);
     }
@@ -21,6 +27,96 @@ class ErrorMessages {
     }
 
     return '發生未知錯誤，請稍後再試';
+  }
+
+  /// Get user-friendly message for validation exceptions
+  static String _getValidationErrorMessage(ValidationException error) {
+    final result = error.result;
+
+    // If there's only one error, return its message directly
+    if (result.errors.length == 1) {
+      final validationError = result.errors.first;
+      return _translateValidationError(validationError);
+    }
+
+    // For multiple errors, combine them
+    final messages = result.errors
+        .map((e) => _translateValidationError(e))
+        .take(3) // Show max 3 errors
+        .join('\n• ');
+
+    return '資料驗證失敗：\n• $messages';
+  }
+
+  /// Translate validation error to user-friendly Chinese
+  static String _translateValidationError(ValidationError error) {
+    // Map common field names to Chinese
+    final fieldName = _translateFieldName(error.field);
+
+    // Map error codes to user-friendly messages
+    switch (error.code) {
+      case 'REQUIRED_FIELD':
+        return '$fieldName 為必填欄位';
+      case 'INVALID_TYPE':
+        return '$fieldName 格式不正確';
+      case 'INVALID_FORMAT':
+        return '$fieldName 格式無效';
+      case 'INVALID_TIMESTAMP':
+        return '$fieldName 時間格式不正確';
+      case 'MIN_LENGTH':
+        return '$fieldName 長度不足';
+      case 'MAX_LENGTH':
+        return '$fieldName 長度超過限制';
+      case 'MIN_VALUE':
+        return '$fieldName 數值過小';
+      case 'MAX_VALUE':
+        return '$fieldName 數值過大';
+      case 'INVALID_ENUM':
+        return '$fieldName 的值不在允許範圍內';
+      case 'INVALID_ID':
+        return '$fieldName 無效';
+      default:
+        return '$fieldName: ${error.message}';
+    }
+  }
+
+  /// Translate field names to Chinese
+  static String _translateFieldName(String field) {
+    // Remove array indices like [0] if present
+    final cleanField = field.replaceAll(RegExp(r'\[\d+\]\.?'), '');
+
+    switch (cleanField) {
+      case 'id':
+        return 'ID';
+      case 'name':
+        return '名稱';
+      case 'email':
+        return 'Email';
+      case 'password':
+        return '密碼';
+      case 'token':
+        return '驗證令牌';
+      case 'user':
+        return '使用者資料';
+      case 'brand':
+        return '品牌';
+      case 'style':
+        return '風格';
+      case 'tasting_count':
+        return '品嚐次數';
+      case 'action':
+        return '操作類型';
+      case 'tasted_at':
+        return '品嚐時間';
+      case 'note':
+        return '備註';
+      case 'created_at':
+        return '建立時間';
+      case 'updated_at':
+        return '更新時間';
+      default:
+        return cleanField;
+    }
   }
 
   /// Get user-friendly message for Dio exceptions
