@@ -332,6 +332,36 @@ abstract class AppLocalizations {
   /// **'Password must be at least 6 characters'**
   String get authPasswordMinLength;
 
+  /// No description provided for @authPasswordStrength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters with uppercase, lowercase, and numbers'**
+  String get authPasswordStrength;
+
+  /// No description provided for @authConfirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please re-enter your password'**
+  String get authConfirmPasswordHint;
+
+  /// No description provided for @authConfirmPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get authConfirmPasswordRequired;
+
+  /// No description provided for @authPasswordMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authPasswordMismatch;
+
+  /// No description provided for @authRegisterLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Registering...'**
+  String get authRegisterLoading;
+
   /// No description provided for @authNameRequired.
   ///
   /// In en, this message translates to:

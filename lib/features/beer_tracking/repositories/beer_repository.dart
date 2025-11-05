@@ -3,6 +3,8 @@ import 'package:hive/hive.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/utils/app_logger.dart';
 import '../../../core/utils/date_time_utils.dart';
+import '../../../core/validation/validators/beer_item_validator.dart';
+import '../../../core/validation/validation_result.dart';
 import '../models/beer_item.dart';
 
 /// Tasting log model for beer consumption records
@@ -42,6 +44,8 @@ class TastingLog {
 class BeerRepository {
   final ApiClient _apiClient = ApiClient();
   final String _boxName = 'beer_data';
+  final BeerItemValidator _validator = BeerItemValidator();
+  final BeerListValidator _listValidator = BeerListValidator();
 
   /// Get Hive box for beer data
   Box<BeerItem> get _beerBox => Hive.box<BeerItem>(_boxName);
@@ -64,6 +68,14 @@ class BeerRepository {
 
       if (response.statusCode == 200) {
         final data = response.data['data'] as List<dynamic>;
+
+        // Validate API response data
+        final validationResult = _listValidator.validateJsonList(data);
+        if (!validationResult.isValid) {
+          logger.e('Beer list validation failed: ${validationResult.errorMessage}');
+          throw ValidationException(validationResult);
+        }
+
         final beers = data
             .map((json) => BeerItem.fromJson(json as Map<String, dynamic>))
             .toList();

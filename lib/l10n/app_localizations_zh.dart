@@ -128,6 +128,21 @@ class AppLocalizationsZh extends AppLocalizations {
   String get authPasswordMinLength => '密碼至少需要 6 個字符';
 
   @override
+  String get authPasswordStrength => '密碼需至少 8 個字符，包含大小寫英文與數字';
+
+  @override
+  String get authConfirmPasswordHint => '請再次輸入您的密碼';
+
+  @override
+  String get authConfirmPasswordRequired => '請再次輸入密碼';
+
+  @override
+  String get authPasswordMismatch => '密碼不一致';
+
+  @override
+  String get authRegisterLoading => '註冊中...';
+
+  @override
   String get authNameRequired => '請輸入姓名';
 
   @override

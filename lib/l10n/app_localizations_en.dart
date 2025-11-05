@@ -128,6 +128,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPasswordMinLength => 'Password must be at least 6 characters';
 
   @override
+  String get authPasswordStrength => 'Password must be at least 8 characters with uppercase, lowercase, and numbers';
+
+  @override
+  String get authConfirmPasswordHint => 'Please re-enter your password';
+
+  @override
+  String get authConfirmPasswordRequired => 'Please confirm your password';
+
+  @override
+  String get authPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get authRegisterLoading => 'Registering...';
+
+  @override
   String get authNameRequired => 'Please enter name';
 
   @override
