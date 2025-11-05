@@ -8,6 +8,8 @@ import '../../../shared/widgets/language_dialog.dart';
 import '../../../core/auth/auth_provider.dart';
 import '../../../core/i18n/locale_provider.dart';
 import '../../../l10n/app_localizations.dart';
+import 'edit_profile_screen.dart';
+import 'change_password_screen.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -105,6 +107,33 @@ class ProfileScreen extends ConsumerWidget {
             ),
 
             SizedBox(height: 24.h),
+
+            // 個人資料管理
+            _buildSettingItem(
+              icon: Icons.edit,
+              title: '編輯個人資料',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => EditProfileScreen(),
+                  ),
+                );
+              },
+            ),
+
+            _buildSettingItem(
+              icon: Icons.lock_reset,
+              title: '變更密碼',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ChangePasswordScreen(),
+                  ),
+                );
+              },
+            ),
+
+            SizedBox(height: 12.h),
 
             // 設定選項
             _buildSettingItem(

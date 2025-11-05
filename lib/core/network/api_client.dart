@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../constants/app_constants.dart';
+import 'interceptors/retry_interceptor.dart';
+import '../utils/app_logger.dart';
 
 class ApiClient {
   static final ApiClient _instance = ApiClient._internal();
@@ -29,9 +31,17 @@ class ApiClient {
       },
     );
 
-    // 添加攔截器
+    // 添加攔截器（順序很重要！）
+    // 1. Retry Interceptor - 第一個處理錯誤重試
+    _dio.interceptors.add(RetryInterceptor(
+      maxRetries: 3,
+      initialDelay: Duration(milliseconds: 500),
+    ));
+
+    // 2. Auth Interceptor - 添加 token 和處理 401
     _dio.interceptors.add(_createAuthInterceptor());
 
+    // 3. Logging Interceptor - 最後記錄所有請求（僅 debug 模式）
     if (kDebugMode) {
       _dio.interceptors.add(LogInterceptor(
         requestBody: true,
@@ -40,6 +50,8 @@ class ApiClient {
         responseHeader: false,
       ));
     }
+
+    logger.i('ApiClient initialized with retry interceptor');
   }
 
   String _getBaseUrl() {
