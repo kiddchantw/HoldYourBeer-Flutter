@@ -1,48 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/network/api_client.dart';
 import '../../../models/chart_data.dart';
-import '../data/charts_api_client.dart';
+import '../repositories/charts_repository.dart';
 
-final chartApiClientProvider = Provider<ChartsApiClient>((ref) {
-  final dio = ApiClient().dio;
-  return ChartsApiClient(dio);
+// Charts Repository Provider
+final chartsRepositoryProvider = Provider<ChartsRepository>((ref) {
+  return ChartsRepository();
 });
 
+// Chart Data Provider with color configuration
 final chartDataProvider = FutureProvider<List<ChartData>>((ref) async {
-  try {
-    final apiClient = ref.read(chartApiClientProvider);
-    final response = await apiClient.getBrandAnalytics();
+  final repository = ref.read(chartsRepositoryProvider);
+  final data = await repository.getBrandAnalytics();
 
-    if (!response.success || response.data.isEmpty) {
-      return [];
-    }
-
-    // HoldYourBeer 網站相同的顏色配置
-    final colors = [
-      Color(0xFFFF6384), // rgba(255, 99, 132, 0.6)
-      Color(0xFF36A2EB), // rgba(54, 162, 235, 0.6)
-      Color(0xFFFFCE56), // rgba(255, 206, 86, 0.6)
-      Color(0xFF4BC0C0), // rgba(75, 192, 192, 0.6)
-      Color(0xFF9966FF), // rgba(153, 102, 255, 0.6)
-      Color(0xFFFF9F40), // rgba(255, 159, 64, 0.6)
-    ];
-
-    return response.data.asMap().entries.map((entry) {
-      final index = entry.key;
-      final item = entry.value;
-      return ChartData(
-        label: item.brandName,
-        value: item.totalConsumption.toDouble(),
-        color: colors[index % colors.length],
-      );
-    }).toList();
-  } catch (e) {
-    // 開發時使用模擬數據
+  if (data.isEmpty) {
+    // Return mock data for development if API fails
     return _getMockChartData();
   }
+
+  // HoldYourBeer website matching color configuration
+  final colors = [
+    Color(0xFFFF6384), // rgba(255, 99, 132, 0.6)
+    Color(0xFF36A2EB), // rgba(54, 162, 235, 0.6)
+    Color(0xFFFFCE56), // rgba(255, 206, 86, 0.6)
+    Color(0xFF4BC0C0), // rgba(75, 192, 192, 0.6)
+    Color(0xFF9966FF), // rgba(153, 102, 255, 0.6)
+    Color(0xFFFF9F40), // rgba(255, 159, 64, 0.6)
+  ];
+
+  // Apply colors to chart data
+  return data.asMap().entries.map((entry) {
+    final index = entry.key;
+    final item = entry.value;
+    return ChartData(
+      label: item.label,
+      value: item.value,
+      color: colors[index % colors.length],
+    );
+  }).toList();
 });
 
+// Statistics Provider
+final statisticsProvider = FutureProvider<Map<String, int>>((ref) async {
+  final repository = ref.read(chartsRepositoryProvider);
+  return await repository.getStatistics();
+});
+
+// Mock data for development/fallback
 List<ChartData> _getMockChartData() {
   final colors = [
     Color(0xFFFF6384),

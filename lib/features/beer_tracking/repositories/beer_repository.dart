@@ -2,7 +2,35 @@ import 'package:dio/dio.dart';
 import 'package:hive/hive.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/utils/app_logger.dart';
+import '../../../core/utils/date_time_utils.dart';
 import '../models/beer_item.dart';
+
+/// Tasting log model for beer consumption records
+class TastingLog {
+  final int id;
+  final String action;
+  final DateTime tastedAt;
+  final String? note;
+
+  TastingLog({
+    required this.id,
+    required this.action,
+    required this.tastedAt,
+    this.note,
+  });
+
+  factory TastingLog.fromJson(Map<String, dynamic> json) {
+    return TastingLog(
+      id: json['id'] as int,
+      action: json['action'] as String,
+      tastedAt: DateTimeUtils.parseServerDateTimeWithTimezone(
+        json['tasted_at'] as String,
+        json['server_timezone'] as String?,
+      ),
+      note: json['note'] as String?,
+    );
+  }
+}
 
 /// Repository for managing beer data with local caching
 ///
@@ -163,5 +191,92 @@ class BeerRepository {
   /// Get cached beer count
   int getCachedBeerCount() {
     return _beerBox.length;
+  }
+
+  // ============================================================================
+  // Tasting Logs & Count Actions
+  // ============================================================================
+
+  /// Get tasting logs for a specific beer
+  Future<List<TastingLog>> getTastingLogs(int beerId) async {
+    try {
+      logger.i('Fetching tasting logs for beer $beerId');
+      final response = await _apiClient.dio.get('/beers/$beerId/tasting_logs');
+
+      if (response.statusCode == 200) {
+        final data = response.data as List<dynamic>;
+        final logs = data
+            .map((json) => TastingLog.fromJson(json as Map<String, dynamic>))
+            .toList();
+        logger.i('Successfully fetched ${logs.length} tasting logs');
+        return logs;
+      } else {
+        throw Exception('Failed to load tasting logs: ${response.statusCode}');
+      }
+    } on DioException catch (e, stack) {
+      logger.e('API error while fetching tasting logs', error: e, stackTrace: stack);
+      rethrow;
+    } catch (e, stack) {
+      logger.e('Unexpected error in getTastingLogs', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  /// Add a tasting record with optional note
+  Future<void> addTastingRecord(int beerId, String note) async {
+    try {
+      logger.i('Adding tasting record for beer $beerId with note');
+      await _apiClient.dio.post(
+        '/beers/$beerId/count_actions',
+        data: {
+          'action': 'increment',
+          if (note.isNotEmpty) 'note': note,
+        },
+      );
+      logger.i('Successfully added tasting record');
+    } on DioException catch (e, stack) {
+      logger.e('Error adding tasting record', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  /// Increment beer count
+  Future<void> incrementBeerCount(int beerId) async {
+    try {
+      logger.d('Incrementing beer $beerId count');
+      await _apiClient.dio.post(
+        '/beers/$beerId/count_actions',
+        data: {'action': 'increment'},
+      );
+
+      // Update cache optimistically
+      final beer = _beerBox.get(beerId);
+      if (beer != null) {
+        await _beerBox.put(beerId, beer.copyWith(count: beer.count + 1));
+      }
+    } on DioException catch (e, stack) {
+      logger.e('Error incrementing beer count', error: e, stackTrace: stack);
+      rethrow;
+    }
+  }
+
+  /// Decrement beer count
+  Future<void> decrementBeerCount(int beerId) async {
+    try {
+      logger.d('Decrementing beer $beerId count');
+      await _apiClient.dio.post(
+        '/beers/$beerId/count_actions',
+        data: {'action': 'decrement'},
+      );
+
+      // Update cache optimistically
+      final beer = _beerBox.get(beerId);
+      if (beer != null && beer.count > 0) {
+        await _beerBox.put(beerId, beer.copyWith(count: beer.count - 1));
+      }
+    } on DioException catch (e, stack) {
+      logger.e('Error decrementing beer count', error: e, stackTrace: stack);
+      rethrow;
+    }
   }
 }
