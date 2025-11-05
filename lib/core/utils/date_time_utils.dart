@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'app_logger.dart';
 
 /// 時間處理工具類
 /// 處理時區轉換和時間格式化
@@ -18,8 +19,8 @@ class DateTimeUtils {
 
       // 轉換為本地時間
       return utcDateTime.toLocal();
-    } catch (e) {
-      print('Error parsing server datetime: $e');
+    } catch (e, stack) {
+      logger.e('Error parsing server datetime', error: e, stackTrace: stack);
       // 如果解析失敗，返回當前時間
       return DateTime.now();
     }
@@ -47,8 +48,8 @@ class DateTimeUtils {
 
       // 如果沒有時區資訊，使用預設邏輯
       return parseServerDateTime(serverDateTimeString);
-    } catch (e) {
-      print('Error parsing server datetime with timezone: $e');
+    } catch (e, stack) {
+      logger.e('Error parsing server datetime with timezone', error: e, stackTrace: stack);
       return DateTime.now();
     }
   }

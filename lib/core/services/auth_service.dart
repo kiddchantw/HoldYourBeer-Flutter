@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../network/api_client.dart';
 import '../models/auth_models.dart';
 import '../constants/app_constants.dart';
+import '../utils/app_logger.dart';
 
 class AuthService {
   final ApiClient _apiClient = ApiClient();
@@ -83,9 +84,9 @@ class AuthService {
     try {
       // 嘗試呼叫後端 logout API
       await _apiClient.dio.post('/logout');
-    } catch (e) {
+    } catch (e, stack) {
       // 即使 API 調用失敗，也要清除本地資料
-      print('Logout API call failed: $e');
+      logger.w('Logout API call failed', error: e, stackTrace: stack);
     } finally {
       // 清除本地儲存的認證資料
       await _apiClient.clearAuthToken();
