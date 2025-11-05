@@ -10,6 +10,7 @@ import '../utils/app_logger.dart';
 import '../../features/navigation/screens/main_scaffold_new.dart';
 import '../../features/profile/screens/privacy_settings_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
+import '../../features/auth/screens/register_screen.dart';
 import '../../features/tasting_history/screens/tasting_history_screen.dart';
 
 // 用戶模型 - 基於 API 回應
@@ -177,12 +178,13 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final isLoggedIn = authState is Authenticated;
       final isLoginRoute = state.matchedLocation == '/login';
+      final isRegisterRoute = state.matchedLocation == '/register';
 
-      if (!isLoggedIn && !isLoginRoute) {
+      if (!isLoggedIn && !isLoginRoute && !isRegisterRoute) {
         return '/login';
       }
 
-      if (isLoggedIn && isLoginRoute) {
+      if (isLoggedIn && (isLoginRoute || isRegisterRoute)) {
         return '/';
       }
 
@@ -192,6 +194,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/register',
+        builder: (context, state) => const RegisterScreen(),
       ),
       GoRoute(
         path: '/',

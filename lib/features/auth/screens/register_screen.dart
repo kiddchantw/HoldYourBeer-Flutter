@@ -8,23 +8,28 @@ import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/circular_language_selector.dart';
 import '../../../shared/widgets/background/background.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends ConsumerStatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -53,7 +58,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: SafeArea(
           child: Stack(
             children: [
-              // 主要登入內容
+              // 主要註冊內容
               SingleChildScrollView(
                 padding: EdgeInsets.symmetric(horizontal: 24.w),
                 child: SizedBox(
@@ -66,29 +71,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       // Logo 區域
                       _buildLogoSection(),
 
-                      SizedBox(height: 20.h), // 從 30.h 減少到 20.h (減少 10px)
+                      SizedBox(height: 20.h),
 
-                      // 登入表單
-                      _buildLoginForm(),
+                      // 註冊表單
+                      _buildRegisterForm(),
 
                       const Spacer(),
 
-                      // 註冊連結
-                      _buildRegisterLink(),
-                      SizedBox(height: 16.h),
-
-                      // 底部裝飾文字
-                      _buildFooterText(),
+                      // 已有帳號連結
+                      _buildLoginLink(),
                       SizedBox(height: 30.h),
                     ],
                   ),
                 ),
               ),
 
-              // 語系切換按鈕 - 與下方email區塊左邊對齊
+              // 語系切換按鈕
               Positioned(
                 top: 8.h,
-                left: 48.w, // 24.w (主要padding) + 24.w (表單padding) = 48.w
+                left: 48.w,
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.r),
@@ -109,7 +110,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ),
     );
   }
-
 
   Widget _buildLogoSection() {
     final localizations = AppLocalizations.of(context)!;
@@ -170,7 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildLoginForm() {
+  Widget _buildRegisterForm() {
     return Container(
       padding: EdgeInsets.all(24.w),
       decoration: BoxDecoration(
@@ -189,24 +189,80 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
+            // 姓名輸入框
+            _buildNameField(),
+            SizedBox(height: 16.h),
+
             // Email 輸入框
             _buildEmailField(),
             SizedBox(height: 16.h),
 
             // Password 輸入框
             _buildPasswordField(),
-            SizedBox(height: 24.h),
-
-            // 登入按鈕
-            _buildLoginButton(),
             SizedBox(height: 16.h),
 
-            // 忘記密碼連結
-            _buildForgotPasswordLink(),
+            // Confirm Password 輸入框
+            _buildConfirmPasswordField(),
+            SizedBox(height: 24.h),
+
+            // 註冊按鈕
+            _buildRegisterButton(),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildNameField() {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          localizations.authName,
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: BeerColors.textDark,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        TextFormField(
+          controller: _nameController,
+          keyboardType: TextInputType.name,
+          textCapitalization: TextCapitalization.words,
+          decoration: InputDecoration(
+            hintText: localizations.authNameHint,
+            prefixIcon: Icon(
+              Icons.person_outline,
+              color: BeerColors.primaryAmber500,
+              size: 20.sp,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(color: BeerColors.gray400),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(color: BeerColors.gray400),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(color: BeerColors.primaryAmber500, width: 2.w),
+            ),
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return localizations.authNameRequired;
+            }
+            return null;
+          },
+        ),
+      ],
     );
   }
 
@@ -322,8 +378,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             if (value == null || value.isEmpty) {
               return localizations.authPasswordRequired;
             }
-            if (value.length < 6) {
-              return localizations.authPasswordMinLength;
+            if (value.length < 8) {
+              return localizations.authPasswordStrength;
+            }
+            if (!RegExp(r'[A-Z]').hasMatch(value)) {
+              return localizations.authPasswordStrength;
+            }
+            if (!RegExp(r'[a-z]').hasMatch(value)) {
+              return localizations.authPasswordStrength;
+            }
+            if (!RegExp(r'[0-9]').hasMatch(value)) {
+              return localizations.authPasswordStrength;
             }
             return null;
           },
@@ -332,7 +397,74 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildLoginButton() {
+  Widget _buildConfirmPasswordField() {
+    final localizations = AppLocalizations.of(context)!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          localizations.authConfirmPassword,
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w600,
+            color: BeerColors.textDark,
+          ),
+        ),
+        SizedBox(height: 8.h),
+        TextFormField(
+          controller: _confirmPasswordController,
+          obscureText: !_isConfirmPasswordVisible,
+          decoration: InputDecoration(
+            hintText: localizations.authConfirmPasswordHint,
+            prefixIcon: Icon(
+              Icons.lock_outline,
+              color: BeerColors.primaryAmber500,
+              size: 20.sp,
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _isConfirmPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                color: BeerColors.gray500,
+                size: 20.sp,
+              ),
+              onPressed: () {
+                setState(() {
+                  _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                });
+              },
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(color: BeerColors.gray400),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(color: BeerColors.gray400),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12.r),
+              borderSide: BorderSide(color: BeerColors.primaryAmber500, width: 2.w),
+            ),
+            fillColor: Colors.white,
+            filled: true,
+            contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return localizations.authConfirmPasswordRequired;
+            }
+            if (value != _passwordController.text) {
+              return localizations.authPasswordMismatch;
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRegisterButton() {
     final authState = ref.watch(authStateProvider);
     final isLoading = authState is Loading;
     final localizations = AppLocalizations.of(context)!;
@@ -341,7 +473,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       width: double.infinity,
       height: 50.h,
       child: ElevatedButton(
-        onPressed: isLoading ? null : _handleLogin,
+        onPressed: isLoading ? null : _handleRegister,
         style: ElevatedButton.styleFrom(
           backgroundColor: BeerColors.primaryAmber500,
           foregroundColor: Colors.white,
@@ -361,7 +493,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               )
             : Text(
-                localizations.authLogin,
+                localizations.authRegister,
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
@@ -371,36 +503,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildForgotPasswordLink() {
-    final localizations = AppLocalizations.of(context)!;
-
-    return Center(
-      child: TextButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${localizations.authForgotPassword} 功能開發中...')),
-          );
-        },
-        child: Text(
-          localizations.authForgotPassword,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: BeerColors.primaryAmber600,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRegisterLink() {
+  Widget _buildLoginLink() {
     final localizations = AppLocalizations.of(context)!;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          localizations.authDontHaveAccount,
+          localizations.authAlreadyRegistered,
           style: TextStyle(
             fontSize: 14.sp,
             color: BeerColors.primaryAmber600.withOpacity(0.7),
@@ -408,10 +518,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ),
         TextButton(
           onPressed: () {
-            context.go('/register');
+            context.go('/login');
           },
           child: Text(
-            localizations.authSignUpNow,
+            localizations.authLogin,
             style: TextStyle(
               fontSize: 14.sp,
               color: BeerColors.primaryAmber600,
@@ -423,26 +533,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _buildFooterText() {
-    final localizations = AppLocalizations.of(context)!;
-
-    return Text(
-      localizations.authCopyright,
-      style: TextStyle(
-        fontSize: 12.sp,
-        color: BeerColors.primaryAmber600.withOpacity(0.7),
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-
-  void _handleLogin() {
+  void _handleRegister() {
     if (_formKey.currentState!.validate()) {
+      final name = _nameController.text.trim();
       final email = _emailController.text.trim();
       final password = _passwordController.text;
+      final passwordConfirmation = _confirmPasswordController.text;
 
-      // 使用 AuthProvider 進行登入
-      ref.read(authStateProvider.notifier).login(email, password);
+      // 使用 AuthProvider 進行註冊
+      ref.read(authStateProvider.notifier).register(
+            name: name,
+            email: email,
+            password: password,
+            passwordConfirmation: passwordConfirmation,
+          );
     }
   }
 }
