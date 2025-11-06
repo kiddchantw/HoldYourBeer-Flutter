@@ -7,6 +7,7 @@ import '../../../core/auth/auth_provider.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/circular_language_selector.dart';
 import '../../../shared/widgets/background/background.dart';
+import '../widgets/google_sign_in_button.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -207,6 +208,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
             // 註冊按鈕
             _buildRegisterButton(),
+            SizedBox(height: 16.h),
+
+            // 分隔線
+            _buildDivider(),
+            SizedBox(height: 16.h),
+
+            // Google 登入按鈕
+            _buildGoogleSignInButton(),
           ],
         ),
       ),
@@ -500,6 +509,38 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 ),
               ),
       ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Row(
+      children: [
+        Expanded(child: Divider(color: BeerColors.gray400)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: Text(
+            '或',
+            style: TextStyle(
+              fontSize: 14.sp,
+              color: BeerColors.gray600,
+            ),
+          ),
+        ),
+        Expanded(child: Divider(color: BeerColors.gray400)),
+      ],
+    );
+  }
+
+  Widget _buildGoogleSignInButton() {
+    final authState = ref.watch(authStateProvider);
+    final isLoading = authState is Loading;
+
+    return GoogleSignInButton(
+      isLoading: isLoading,
+      text: '使用 Google 帳號註冊',
+      onPressed: () {
+        ref.read(authStateProvider.notifier).loginWithGoogle();
+      },
     );
   }
 
