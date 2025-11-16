@@ -32,7 +32,21 @@ sessions/
 ## Quick Start
 
 ### Create New Session
+
+**Recommended: From GitHub Issue**
 ```bash
+./scripts/create-session.sh
+# Select option 1, choose issue number
+# Auto-fills issue details, creates organized file
+```
+
+**Manual:**
+```bash
+# Using script
+./scripts/create-session.sh
+# Select option 2, enter feature name
+
+# Or copy template directly
 cp docs/sessions/template.md docs/sessions/current/$(date +%d)-feature-name.md
 ```
 
