@@ -303,6 +303,104 @@ dart format .
 - Use Flutter Inspector for widget tree analysis
 - Check Riverpod provider states with Riverpod Inspector
 
+## Session Management
+
+### Overview
+For non-trivial features, create a session document to track planning, implementation, and learnings.
+
+**Session lifecycle**: Create → Develop → Extract Knowledge → Archive (Delete)
+
+### Create Session
+
+```bash
+# Copy template
+cp docs/sessions/template.md docs/sessions/current/$(date +%d)-feature-name.md
+
+# Example
+cp docs/sessions/template.md docs/sessions/current/15-offline-sync.md
+```
+
+### During Development
+
+**Update session file:**
+- Fill Planning section with approach and design decisions
+- Check off Implementation Checklist items
+- Document blockers and solutions
+- Reference session in commits
+
+**Example commit:**
+```bash
+git commit -m "feat(sync): implement offline queue
+
+Part of docs/sessions/current/15-offline-sync.md
+Phase 2: State Management Integration"
+```
+
+### Complete Session
+
+**When feature is done:**
+
+1. **Fill Outcome section**:
+   - What was built
+   - Files changed
+   - Lessons learned
+
+2. **Extract ALL knowledge** to permanent docs:
+   - Decisions → Create `docs/ADR/XXX-decision.md`
+   - Architecture → Update `docs/architecture/YYY.md`
+   - Patterns → Update `docs/architecture/patterns.md`
+   - API changes → Update `docs/api/endpoints.md`
+   - Product status → Update `docs/product/features/`
+
+3. **Archive session** using automated tool:
+
+```bash
+./scripts/archive-session.sh
+```
+
+The script will:
+- List current sessions
+- Validate knowledge extraction checklist
+- Guide you through delete or move to notable/
+- Generate commit message
+
+**Manual archive:**
+```bash
+# Most sessions: Delete after knowledge extraction
+git rm docs/sessions/current/15-feature.md
+git commit -m "chore: remove session after knowledge extraction
+
+Knowledge preserved in:
+- ADR-006: [Decision]
+- architecture/offline-sync.md: [Implementation]"
+
+# Rare: Major architectural changes
+git mv docs/sessions/current/15-major-refactor.md \
+       docs/sessions/notable/2025-11-15-major-refactor.md
+git commit -m "docs: preserve session in notable/
+
+Reason: Major architectural refactor with complex migration"
+```
+
+### Archive Guidelines
+
+**Delete immediately (95% of sessions):**
+- ✅ All knowledge extracted to permanent docs
+- ✅ Standard implementation
+- ✅ No unique insights beyond ADR/architecture
+
+**Move to notable/ (<5% of sessions):**
+- 🌟 Major architectural change
+- 🌟 Unique insights hard to capture in ADR
+- 🌟 Complex decision process worth preserving
+
+### Tools & Templates
+
+- **Session Template**: `docs/sessions/template.md`
+- **Archive Script**: `scripts/archive-session.sh`
+- **Archive Workflow**: `.claude/templates/archive-session.md`
+- **Sessions Guide**: `docs/sessions/README.md`
+
 ## Definition of Done for Features
 
 ### Checklist
@@ -316,6 +414,8 @@ dart format .
 - [ ] **Code Review**: Peer review completed
 - [ ] **Integration Testing**: Tested with actual backend
 - [ ] **UI/UX**: Design matches specifications and is responsive
+- [ ] **Session Document**: Created, completed, and archived (if applicable)
+- [ ] **Knowledge Extracted**: ADR and architecture docs updated
 
 ---
 
